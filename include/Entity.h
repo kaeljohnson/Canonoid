@@ -19,6 +19,6 @@ public:
 	void setCurrParentFrame(SDL_Rect& currFrame);
 
 	SDL_Texture* getTexture();
-	SDL_Rect getCurrFrame();
+	SDL_Rect& getCurrFrame();
 	void free();
 };

@@ -31,7 +31,7 @@ void Entity::setCurrParentFrame(SDL_Rect& currFrame)
 	m_currParentFrame = currFrame;
 }
 
-SDL_Rect Entity::getCurrFrame() 
+SDL_Rect& Entity::getCurrFrame() 
 {
 	return m_currParentFrame;
 }

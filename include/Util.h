@@ -27,6 +27,4 @@ namespace util
 		// Must be multiple of 48
 		return 720;
 	}
-
-    
 }

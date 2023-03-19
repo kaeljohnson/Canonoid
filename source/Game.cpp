@@ -1,7 +1,7 @@
 #include "../include/Game.h"
 
-Game::Game(WindowRenderer& window, Level& level)
-	: m_window(window), m_level(level)
+Game::Game(WindowRenderer& window, GameObjects& gameObjects, Level& level)
+	: m_window(window), m_level(level), m_gameObjects(gameObjects)
 {
 
 }
@@ -31,6 +31,12 @@ void Game::update(SDL_Event& e, float deltaTime)
 
 	//updatePhys();
 	//updatePlayer();
+
+}
+
+void Game::renderGameObjects()
+{
+	m_window.render(*(m_gameObjects.getPlayer()));
 }
 
 bool Game::start()
@@ -61,6 +67,7 @@ bool Game::start()
 
 	    	
 		m_window.clearScreen();
+		renderGameObjects();
 		m_window.display();
 	}
 
