@@ -27,7 +27,7 @@ public:
 	Game(WindowRenderer& window, GameObjects& gameObjects, Level& level);
 
 	bool handleUserInput(SDL_Event& e);
-	void update(SDL_Event& e, float timeStep);
+	void update(SDL_Event& e, double time, double timeStep);
 	void renderGameObjects();
 
 	bool start();

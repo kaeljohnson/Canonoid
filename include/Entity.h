@@ -2,19 +2,19 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include "State.h"
 
 class Entity
 {
 private:
 	SDL_Rect m_currParentFrame;
 	SDL_Texture* m_texture = nullptr;
+
 public:
-	int m_mass;
-	int m_xPos;
-	int m_yPos;
+	State state;
 
 	Entity();
-	Entity(int xPos, int yPos, SDL_Texture* texture);
+	Entity(int xPos, int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture);
 
 	void setCurrParentFrame(SDL_Rect& currFrame);
 

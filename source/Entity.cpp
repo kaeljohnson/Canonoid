@@ -8,12 +8,9 @@ Entity::Entity()
 	m_currParentFrame.y = 0;
 	m_currParentFrame.w = 0;
 	m_currParentFrame.h = 0;
-
-	m_xPos = 0;
-	m_yPos = 0;
 }
-Entity::Entity(int xPos,int yPos, SDL_Texture* texture) 
-	: m_xPos(xPos), m_yPos(yPos), m_texture(texture)
+Entity::Entity(int xPos,int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture) 
+	: state(xPos, yPos, xVel, yVel, physOn), m_texture(texture)
 {
 	m_currParentFrame.x = 0;
 	m_currParentFrame.y = 0;

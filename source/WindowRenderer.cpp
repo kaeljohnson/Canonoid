@@ -53,8 +53,8 @@ void WindowRenderer::render(Entity& entity)
 	src.h = entity.getCurrFrame().h;
 
 	SDL_Rect dst;
-	dst.x = entity.m_xPos;
-	dst.y = entity.m_yPos;
+	dst.x = entity.state.getXPos();
+	dst.y = entity.state.getYPos();
 	dst.w = entity.getCurrFrame().w;
 	dst.h = entity.getCurrFrame().h;
 

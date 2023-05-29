@@ -16,4 +16,5 @@ private:
 public:
 	GameObjects(WindowRenderer& window);
 	Player* getPlayer();
+	void updateGameObjectStates();
 };

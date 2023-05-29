@@ -2,5 +2,5 @@
 
 namespace textureImages
 {
-	inline const char* getPlayerPng() { return "assets/PlayerIdleRightMedium1.png"; }
+	inline const char* getPlayerPng() { return "assets/NinjaGuy-exportx2.png"; }
 };

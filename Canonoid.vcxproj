@@ -26,6 +26,7 @@
     <ClInclude Include="include\Level.h" />
     <ClInclude Include="include\Levels.h" />
     <ClInclude Include="include\Player.h" />
+    <ClInclude Include="include\State.h" />
     <ClInclude Include="include\Textures.h" />
     <ClInclude Include="include\Tile.h" />
     <ClInclude Include="include\Util.h" />
@@ -38,6 +39,7 @@
     <ClCompile Include="source\Level.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Player.cpp" />
+    <ClCompile Include="source\State.cpp" />
     <ClCompile Include="source\Tile.cpp" />
     <ClCompile Include="source\WindowRenderer.cpp" />
   </ItemGroup>
