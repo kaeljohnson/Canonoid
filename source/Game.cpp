@@ -73,10 +73,17 @@ bool Game::start()
 		latestTime = newTime;
 		accumulator += frameTime;
 
-		while (accumulator >= timeStep) 
-		{
-			
+		// refactor these doubles into state objects?
+		double prevXForPlayer = m_gameObjects.getPlayer()->state.getXPos();
+		double prevYForPlayer = m_gameObjects.getPlayer()->state.getYPos();
+
+		//while (accumulator >= timeStep) 
+		//{
+			// we can view all the object states in the gameObjects class, and have a container where we can store the previous states in
+			// so we can make this interpolation work.
 			// previousState = currentState;
+			// prevXForPlayer = m_gameObjects.getPlayer()->state.getXPos();
+			// prevYForPlayer = m_gameObjects.getPlayer()->state.getYPos();
 			// integrate(currentState, t, dt);
 			// t += dt;
 			// accumulator -= dt;
@@ -85,10 +92,15 @@ bool Game::start()
 
 			timeElapsed += timeStep;
 			accumulator -= timeStep;
-		}
+		//}
 		const double alpha = accumulator / timeStep;
 
-		m_gameObjects.updateGameObjectStates(); // Interpolate extra time in the accumulator for smooth rendering.
+		//m_gameObjects.updateGameObjectStates(alpha, prevXForPlayer, prevYForPlayer); // Interpolate extra time in the accumulator for smooth rendering.
+		// Equation for interpolation: currentState * alpha + previousState* (1.0 - alpha);
+
+		// FYI: By current/previous state, it means all the current/previous states for all the objects positions for the time being. May need to adjust this definition
+		// when the physics get morde advanced.
+       
 
 		// Note: the physics updates are separate from the rendering updates.
 	    	

@@ -8,7 +8,10 @@ class Player : public Entity
 {
 private:
 
-	static const int WALK_VELOCITY = 4;
+	// If game loop totally dependent on time step then walk velocity needs to be multiplied
+	// by something dependent on the frame rate so there is no decline in player velocity between
+	// different monitor refresh rates.
+	static const int WALK_VELOCITY = 2;
 
 	bool keys[256] = { false };
 

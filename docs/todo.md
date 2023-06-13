@@ -1,7 +1,8 @@
-* Render player on screen
+* ~Render player on screen~
 * Render level on screen 
-* Timestep
-	-> Must be seemless regardless of frame rate and/or processing hiccups.
+* Optimize game loop.
+** Timestep
+*** Must be seemless regardless of frame rate and/or processing hiccups.
 * Map
 * Physics
 	-> Need to find good way to hold entity physics state.
@@ -10,4 +11,4 @@
 			-> There may be multiple updates between each frame depending on the display.
 	-> Whatever is refered to as the "map" are the tiles in the game that will not move by themselves. They will move when the camera updates, but that will be separate from the physics.
 * Camera follow
-
+* Collision detection.

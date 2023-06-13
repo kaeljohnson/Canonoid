@@ -132,10 +132,29 @@ void Player::move(float deltaTime)
 		state.getYPos() + state.getYVel() * deltaTime * 100
 	);
 
-	if (state.getYPos() > util::getScreenHeight() - 70 || state.getYPos() < 0)
+
+	// Should probably refactor the following logic into a game objects function.
+	if (state.getYPos() > util::getScreenHeight() - 70)
+	{
 		state.setYVel(0);
+		state.setYPos(state.getYPos() - WALK_VELOCITY);
+	}
 
-	if (state.getXPos() < 0 || state.getXPos() + 70 > util::getScreenWidth())
+	if (state.getYPos() < 0)
+	{
+		state.setYVel(0);
+		state.setYPos(state.getYPos() + WALK_VELOCITY);
+	}
+
+	if (state.getXPos() < 0)
+	{
 		state.setXVel(0);
+		state.setXPos(state.getXPos() + WALK_VELOCITY);
+	}
 
+	if (state.getXPos() + 70 > util::getScreenWidth())
+	{
+		state.setXVel(0);
+		state.setXPos(state.getXPos() - WALK_VELOCITY);
+	}
 }
