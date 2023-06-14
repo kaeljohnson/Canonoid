@@ -21,10 +21,9 @@ private:
 
 	WindowRenderer& m_window;
 	GameObjects& m_gameObjects;
-	Level& m_level;
 
 public:
-	Game(WindowRenderer& window, GameObjects& gameObjects, Level& level);
+	Game(WindowRenderer& window, GameObjects& gameObjects);
 
 	bool handleUserInput(SDL_Event& e);
 	void update(SDL_Event& e, double time, double timeStep);

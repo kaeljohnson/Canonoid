@@ -39,8 +39,8 @@ int main(int argc, char* args[])
 	WindowRenderer window = initializeWindow();
 	Level playground(levels::getPlayground());
 
-	GameObjects gameObjects(window);
-	Game newGame(window, gameObjects, playground);
+	GameObjects gameObjects(window, playground);
+	Game newGame(window, gameObjects);
 
 	newGame.start();
 	newGame.stop();

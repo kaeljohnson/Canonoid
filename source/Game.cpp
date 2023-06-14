@@ -1,8 +1,8 @@
 #include "../include/Game.h"
 #include "../include/Entity.h"
 
-Game::Game(WindowRenderer& window, GameObjects& gameObjects, Level& level)
-	: m_window(window), m_level(level), m_gameObjects(gameObjects)
+Game::Game(WindowRenderer& window, GameObjects& gameObjects)
+	: m_window(window), m_gameObjects(gameObjects)
 {
 
 }
@@ -50,13 +50,16 @@ void Game::update(SDL_Event& e, double time, double deltaTime)
 void Game::renderGameObjects()
 {
 	m_window.render(*(m_gameObjects.getPlayer()));
+
+	// Need to only load part of the map in view.
+	m_gameObjects.loadMap();
 }
 
 bool Game::start()
 {
 	SDL_Event e;
 	// loadGameStates(); // Each entity has-a state 
-	// loadMap();
+	//m_gameObjects.loadMap();
 
 	running = true;
 
@@ -73,17 +76,11 @@ bool Game::start()
 		latestTime = newTime;
 		accumulator += frameTime;
 
-		// refactor these doubles into state objects?
-		double prevXForPlayer = m_gameObjects.getPlayer()->state.getXPos();
-		double prevYForPlayer = m_gameObjects.getPlayer()->state.getYPos();
-
 		//while (accumulator >= timeStep) 
 		//{
 			// we can view all the object states in the gameObjects class, and have a container where we can store the previous states in
 			// so we can make this interpolation work.
 			// previousState = currentState;
-			// prevXForPlayer = m_gameObjects.getPlayer()->state.getXPos();
-			// prevYForPlayer = m_gameObjects.getPlayer()->state.getYPos();
 			// integrate(currentState, t, dt);
 			// t += dt;
 			// accumulator -= dt;

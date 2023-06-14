@@ -1,8 +1,11 @@
 #include "../include/GameObjects.h"
+#include "../include/Textures.h"
+#include "../include/Tile.h"
 
-GameObjects::GameObjects(WindowRenderer& window)
+GameObjects::GameObjects(WindowRenderer& window, Level& level) : m_window(window), m_level(level)
 {
 	SDL_Texture* playerSprite = window.loadTexture(textureImages::getPlayerPng());
+	m_floorSprite = window.loadTexture(textureImages::getFloor1());
 	m_player = new Player(0, 0, 0, 0, true, playerSprite);
 }
 
@@ -22,4 +25,30 @@ void GameObjects::updateGameObjectStates(double alpha, double prevX, double prev
 	//currentState* alpha + previousState * (1.0 - alpha);
 	//getPlayer()->state.setXPos( getPlayer()->state.getXPos() * alpha + prevX * (1.0 - alpha) );
 	//getPlayer()->state.setYPos( getPlayer()->state.getYPos() * alpha + prevY * (1.0 - alpha) );
+}
+
+
+bool GameObjects::loadMap()
+{
+	int tempX = 0;
+	int tempY = 0;
+
+	//SDL_Texture* floor1 = m_window.loadTexture(textureImages::getFloor1());
+
+	for (auto& i : m_level.getMapString())
+	{
+		if (tempX == 3200)
+		{
+			tempX = 0;
+			tempY += 64;
+		}
+		if (i == 'g')
+		{
+			Tile floor(tempX, tempY, m_floorSprite);
+			m_window.render(floor);
+		}
+		tempX += 64;
+	}
+
+	return false;
 }

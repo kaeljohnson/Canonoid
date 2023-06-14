@@ -3,10 +3,11 @@
 Tile::Tile(int x, int y, SDL_Texture* texture)
 	: Entity(x, y, 0, 0, false, texture)
 {
-	m_currFrame.x = 0;
-	m_currFrame.y = 0;
-	m_currFrame.w = 48;
-	m_currFrame.h = 48;
+	SDL_Rect& blockRect = getCurrFrame();
+	blockRect.x = 0;
+	blockRect.y = 0;
+	blockRect.w = 64;
+	blockRect.h = 64;
 
-	setCurrParentFrame(m_currFrame);
+	setCurrParentFrame(blockRect);
 }
