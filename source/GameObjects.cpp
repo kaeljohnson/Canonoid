@@ -33,8 +33,6 @@ bool GameObjects::loadMap()
 	int tempX = 0;
 	int tempY = 0;
 
-	//SDL_Texture* floor1 = m_window.loadTexture(textureImages::getFloor1());
-
 	for (auto& i : m_level.getMapString())
 	{
 		if (tempX == 3200)
@@ -51,4 +49,11 @@ bool GameObjects::loadMap()
 	}
 
 	return false;
+}
+
+bool GameObjects::cleanUp()
+{
+	delete m_player;
+
+	return true;
 }

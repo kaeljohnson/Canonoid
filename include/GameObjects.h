@@ -23,4 +23,5 @@ public:
 	void updateGameObjectStates(double alpha, double prevX, double prevY);
 
 	bool loadMap();
+	bool cleanUp();
 };

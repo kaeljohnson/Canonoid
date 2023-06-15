@@ -46,6 +46,7 @@ int main(int argc, char* args[])
 	newGame.stop();
 	
 	cleanUp(window);
+	gameObjects.cleanUp();
 
 	return 0;
 }

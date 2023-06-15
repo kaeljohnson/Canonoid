@@ -9,14 +9,12 @@ Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* p
 	size_t frameIdx = 0;
 	size_t xStart = 0;
 
-
 	// After physics is implemented this will be an entire animation sprite sheet, not just a single player rect.
 	SDL_Rect& playerRect = getCurrFrame();
 	playerRect.x = 0;
 	playerRect.y = 0;
 	playerRect.w = 64;
 	playerRect.h = 64;
-
 
 	setCurrParentFrame(playerRect);
 }
