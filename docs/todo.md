@@ -12,3 +12,6 @@
 	-> Whatever is refered to as the "map" are the tiles in the game that will not move by themselves. They will move when the camera updates, but that will be separate from the physics.
 * Camera follow
 * Collision detection.
+** Ideas for collision detection.
+*** If the player is within the bounds of another entity, snap it back to the edge 
+*** Each entity is responsible for their own collision.

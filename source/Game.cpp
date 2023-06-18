@@ -49,21 +49,21 @@ void Game::update(SDL_Event& e, double time, double deltaTime)
 	
 	//updatePlayer();
 	m_gameObjects.getPlayer()->move(deltaTime);
+	// checkCollision();
 }
 
 void Game::renderGameObjects()
 {
-	m_window.render(*(m_gameObjects.getPlayer()));
-
 	// Need to only load part of the map in view.
-	m_gameObjects.loadMap();
+	m_gameObjects.renderMap();
+	m_window.render(*(m_gameObjects.getPlayer()));
 }
 
 bool Game::start()
 {
 	SDL_Event e;
 	// loadGameStates(); // Each entity has-a state 
-	//m_gameObjects.loadMap();
+	m_gameObjects.loadMap();
 
 	running = true;
 

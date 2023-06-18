@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
+#include <vector>
 
 #include "Player.h"
 #include "WindowRenderer.h"
@@ -16,6 +17,7 @@ private:
 	SDL_Texture* m_floorSprite;
 	Level& m_level;
 	WindowRenderer& m_window;
+	std::vector<Tile> m_architectureVector;
 
 public:
 	GameObjects(WindowRenderer& window, Level& level);
@@ -23,5 +25,6 @@ public:
 	void updateGameObjectStates(double alpha, double prevX, double prevY);
 
 	bool loadMap();
+	bool renderMap();
 	bool cleanUp();
 };

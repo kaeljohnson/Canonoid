@@ -42,13 +42,22 @@ bool GameObjects::loadMap()
 		}
 		if (i == 'g')
 		{
-			Tile floor(tempX, tempY, m_floorSprite);
-			m_window.render(floor);
+			m_architectureVector.push_back(Tile(tempX, tempY, m_floorSprite));
 		}
 		tempX += 64;
 	}
 
-	return false;
+	return true;
+}
+
+bool GameObjects::renderMap()
+{
+	for (auto& tile : m_architectureVector)
+	{
+		m_window.render(tile);
+	}
+
+	return true;
 }
 
 bool GameObjects::cleanUp()
