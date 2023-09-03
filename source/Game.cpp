@@ -50,6 +50,22 @@ void Game::update(SDL_Event& e, double time, double deltaTime)
 	//updatePlayer();
 	m_gameObjects.getPlayer()->move(deltaTime);
 	// checkCollision();
+	bool isColliding = m_gameObjects.getPlayer()->isColliding(m_gameObjects.getLevelMap());
+	if (isColliding)
+	{
+		m_gameObjects.getPlayer()->state.setYPos(m_gameObjects.getPlayer()->state.getPrevYPos());
+		m_gameObjects.getPlayer()->state.setXPos(m_gameObjects.getPlayer()->state.getPrevXPos());
+		std::cout << "true\n";
+	}
+	else
+	{
+		std::cout << "false\n";
+	}
+	// For collision detection:
+		// Pass in the entire level (objects that can be collided with) to some std::map object and in the
+	    // isColliding function we can quickly check if the player is colliding with any of those coordinates and
+	    // if so move the player out of that boundary.
+	    // If we turn the map into an array of SDL_Rects we can use the SDL_hasIntersection function.
 }
 
 void Game::renderGameObjects()

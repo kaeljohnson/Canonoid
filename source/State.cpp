@@ -26,9 +26,19 @@ double State::getXPos()
 	return xPos;
 }
 
+double State::getPrevXPos()
+{
+	return prevXPos;
+}
+
 double State::getYPos()
 {
 	return yPos;
+}
+
+double State::getPrevYPos()
+{
+	return prevYPos;
 }
 
 double State::getXVel()
@@ -36,27 +46,41 @@ double State::getXVel()
 	return xVel;
 }
 
+double State::getPrevXVel()
+{
+	return prevXVel;
+}
+
 double State::getYVel()
 {
 	return yVel;
 }
 
+double State::getPrevYVel()
+{
+	return prevYVel;
+}
+
 void State::setXPos(double newXPos)
 {
+	prevXPos = xPos;
 	xPos = newXPos;
 }
 
 void State::setYPos(double newYPos)
 {
+	prevYPos = yPos;
 	yPos = newYPos;
 }
 
 void State::setXVel(double newXVel)
 {
+	prevXVel = xVel;
 	xVel = newXVel;
 }
 
 void State::setYVel(double newYVel)
 {
+	prevYVel = yVel;
 	yVel = newYVel;
 }

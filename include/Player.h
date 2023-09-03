@@ -1,8 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "WindowRenderer.h"
 #include "Entity.h"
 #include "State.h"
+#include "Tile.h"
 
 class Player : public Entity 
 {
@@ -28,4 +31,5 @@ public:
 	void endGoUp();
 	void endGoDown();
 	void move(float deltaTime);
+	bool isColliding(std::vector<Tile>& levelMap);
 };

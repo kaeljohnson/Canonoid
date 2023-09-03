@@ -2,6 +2,7 @@
 #include "../include/Util.h"
 
 #include <stdio.h>
+#include <unordered_map>
 
 Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* playerSprite)
 	: Entity(x, y, xVel, yVel, physOn, playerSprite)
@@ -11,9 +12,9 @@ Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* p
 
 	// After physics is implemented this will be an entire animation sprite sheet, not just a single player rect.
 	SDL_Rect& playerRect = getCurrFrame();
-	playerRect.x = 0;
+	playerRect.x = 10;
 	playerRect.y = 0;
-	playerRect.w = 64;
+	playerRect.w = 44;
 	playerRect.h = 64;
 
 	setCurrParentFrame(playerRect);
@@ -130,6 +131,12 @@ void Player::move(float deltaTime)
 		state.getYPos() + state.getYVel() * deltaTime * 100
 	);
 
+	// getCurrFrame().x = state.getXPos();
+	// getCurrFrame().w = 64;
+	// getCurrFrame().y = state.getYPos();
+	// getCurrFrame().h = 64;
+	
+
 
 	// Should probably refactor the following logic into a game objects function.
 	if (state.getYPos() > util::getScreenHeight() - 70)
@@ -155,4 +162,17 @@ void Player::move(float deltaTime)
 		state.setXVel(0);
 		state.setXPos(state.getXPos() - WALK_VELOCITY);
 	}
+}
+
+bool Player::isColliding(std::vector<Tile>& levelMap)
+{
+	for (auto& mapSquare : levelMap)
+	{
+		//if (SDL_HasIntersection(&this->getCurrFrame(), &mapSquare.getCurrFrame()))
+		if (gameHelpers::collision(*this, mapSquare))
+		{
+			return true;
+		}
+	}
+	return false;
 }

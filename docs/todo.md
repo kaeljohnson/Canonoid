@@ -15,3 +15,7 @@
 ** Ideas for collision detection.
 *** If the player is within the bounds of another entity, snap it back to the edge 
 *** Each entity is responsible for their own collision.
+*** For now, iterate through each tile on each update and see if the player has entered its domain.
+*** if any portion of the players box enters the tiles, subtract the velocity amount that the player just made.
+*** Each tile comes with a x,y coordinate and has a width and height, same with the player.
+*** must check if any of the edges of the player enter any of the edges of the tile.

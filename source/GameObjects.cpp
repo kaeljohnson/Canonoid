@@ -42,7 +42,7 @@ bool GameObjects::loadMap()
 		}
 		if (i == 'g')
 		{
-			m_architectureVector.push_back(Tile(tempX, tempY, m_floorSprite));
+			m_levelMap.push_back(Tile(tempX, tempY, m_floorSprite));
 		}
 		tempX += 64;
 	}
@@ -52,7 +52,7 @@ bool GameObjects::loadMap()
 
 bool GameObjects::renderMap()
 {
-	for (auto& tile : m_architectureVector)
+	for (auto& tile : m_levelMap)
 	{
 		m_window.render(tile);
 	}
@@ -65,4 +65,10 @@ bool GameObjects::cleanUp()
 	delete m_player;
 
 	return true;
+}
+
+// std::unordered_map<bool, Tile>& GameObjects::getLevelMap()
+std::vector<Tile>& GameObjects::getLevelMap()
+{
+	return m_levelMap;
 }

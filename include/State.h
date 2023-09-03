@@ -4,8 +4,12 @@
 class State
 {
 protected:
+	float prevXPos;
+	float prevYPos;
 	float xPos;
 	float yPos;
+	float prevXVel;
+	float prevYVel;
 	float xVel;
 	float yVel;
 	float mPhysOn;
@@ -27,9 +31,17 @@ public:
 
     double getXPos();
 
+	double getPrevXPos();
+
 	double getYPos();
+
+	double getPrevYPos();
 
 	double getXVel();
 
+	double getPrevXVel();
+
 	double getYVel();
+
+	double getPrevYVel();
 };

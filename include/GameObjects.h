@@ -17,11 +17,13 @@ private:
 	SDL_Texture* m_floorSprite;
 	Level& m_level;
 	WindowRenderer& m_window;
-	std::vector<Tile> m_architectureVector;
+	// std::unordered_map<bool, Tile> m_levelMap;
+	std::vector<Tile> m_levelMap;
 
 public:
 	GameObjects(WindowRenderer& window, Level& level);
 	Player* getPlayer();
+	std::vector<Tile>& getLevelMap();
 	void updateGameObjectStates(double alpha, double prevX, double prevY);
 
 	bool loadMap();

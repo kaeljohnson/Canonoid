@@ -28,3 +28,39 @@ namespace util
 		return 720;
 	}
 }
+
+namespace gameHelpers
+{
+	inline const bool collision(Entity& rectOne, Entity& rectTwo)
+	{
+		float oneLeft = rectOne.state.getXPos();
+		float oneRight = rectOne.state.getXPos() + rectOne.getCurrFrame().w;
+		float twoLeft = rectTwo.state.getXPos();
+		float twoRight = rectTwo.state.getXPos() + rectTwo.getCurrFrame().w;
+
+		float oneTop = rectOne.state.getYPos();
+		float oneBottom = rectOne.state.getYPos() - rectOne.getCurrFrame().h;
+		float twoTop = rectTwo.state.getYPos();
+		float twoBottom = rectTwo.state.getYPos() - rectTwo.getCurrFrame().h;
+
+		/*
+		std::cout << "One Left: " << oneLeft << "\n" <<
+			"One Right: " << oneRight << "\n" <<
+			"Two Left: " << twoLeft << "\n" <<
+			"Two Right: " << twoRight << "\n" <<
+			"One Top: " << oneTop << "\n" <<
+			"One Bottom: " << oneBottom << "\n" <<
+			"Two Top: " << twoTop << "\n" <<
+			"Two Bottom: " << twoBottom << "\n";
+		*/
+
+		bool topBottomCollision = oneTop > twoBottom && oneBottom < twoTop;
+		bool sidewaysCollision = oneRight >= twoLeft && oneLeft <= twoRight;
+		
+		if (topBottomCollision && sidewaysCollision)
+		{
+			return true;
+		}
+		return false;
+	}
+}
