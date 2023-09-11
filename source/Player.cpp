@@ -122,14 +122,25 @@ void Player::endWalkLeft()
 	state.setXVel(0);
 }
 
-void Player::move(float deltaTime)
+void Player::move(float deltaTime, std::vector<Tile>& levelMap)
 {
 	state.setXPos(
 		state.getXPos() + state.getXVel() * deltaTime * 100
 	);
+
+	if (isColliding(levelMap))
+	{
+		state.setXPos(state.getXPos() - (state.getXVel()) * util::getTimeDelta() * 100);
+	}
+
 	state.setYPos(
 		state.getYPos() + state.getYVel() * deltaTime * 100
 	);
+
+	if (isColliding(levelMap))
+	{
+		state.setYPos(state.getYPos() - (state.getYVel()) * util::getTimeDelta() * 100);
+	}
 
 	// getCurrFrame().x = state.getXPos();
 	// getCurrFrame().w = 64;
@@ -168,8 +179,7 @@ bool Player::isColliding(std::vector<Tile>& levelMap)
 {
 	for (auto& mapSquare : levelMap)
 	{
-		//if (SDL_HasIntersection(&this->getCurrFrame(), &mapSquare.getCurrFrame()))
-		if (gameHelpers::collision(*this, mapSquare))
+		if (collision(mapSquare))
 		{
 			return true;
 		}

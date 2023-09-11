@@ -41,31 +41,11 @@ void Game::update(SDL_Event& e, double time, double deltaTime)
 	{
 		handleUserInput(e);
 	}
-
-	// TO-DO: how to apply physics to the player and the AI enemies?
-	// I.E. When the player gets hit.
-
-	//updatePhys(); // Apply the physics to all game object states.
 	
 	//updatePlayer();
-	m_gameObjects.getPlayer()->move(deltaTime);
-	// checkCollision();
-	bool isColliding = m_gameObjects.getPlayer()->isColliding(m_gameObjects.getLevelMap());
-	if (isColliding)
-	{
-		m_gameObjects.getPlayer()->state.setYPos(m_gameObjects.getPlayer()->state.getPrevYPos());
-		m_gameObjects.getPlayer()->state.setXPos(m_gameObjects.getPlayer()->state.getPrevXPos());
-		std::cout << "true\n";
-	}
-	else
-	{
-		std::cout << "false\n";
-	}
-	// For collision detection:
-		// Pass in the entire level (objects that can be collided with) to some std::map object and in the
-	    // isColliding function we can quickly check if the player is colliding with any of those coordinates and
-	    // if so move the player out of that boundary.
-	    // If we turn the map into an array of SDL_Rects we can use the SDL_hasIntersection function.
+	m_gameObjects.getPlayer()->move(deltaTime, m_gameObjects.getLevelMap());
+	
+	// applyPhysics(m_gameObjects);
 }
 
 void Game::renderGameObjects()

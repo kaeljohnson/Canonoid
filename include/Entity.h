@@ -21,6 +21,7 @@ public:
 	SDL_Texture* getTexture();
 	SDL_Rect& getCurrFrame();
 	void free();
+	const bool collision(Entity&);
 
 	// TO-DO: Need a way to either implicitily or explicitly determine if an entity is affected by physics or is not.
 	// I.E. Architecture tiles are not affected by physics.

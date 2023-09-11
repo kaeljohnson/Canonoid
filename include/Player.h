@@ -30,6 +30,6 @@ public:
 	void goDown();
 	void endGoUp();
 	void endGoDown();
-	void move(float deltaTime);
+	void move(float deltaTime, std::vector<Tile>& levelMap);
 	bool isColliding(std::vector<Tile>& levelMap);
 };

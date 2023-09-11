@@ -41,3 +41,36 @@ void Entity::free()
 		m_texture = nullptr;
 	}
 }
+
+const bool Entity::collision(Entity& toCompare)
+{
+	float oneLeft = state.getXPos();
+	float oneRight = state.getXPos() + getCurrFrame().w;
+	float twoLeft = toCompare.state.getXPos();
+	float twoRight = toCompare.state.getXPos() + toCompare.getCurrFrame().w;
+
+	float oneTop = state.getYPos();
+	float oneBottom = state.getYPos() - getCurrFrame().h;
+	float twoTop = toCompare.state.getYPos();
+	float twoBottom = toCompare.state.getYPos() - toCompare.getCurrFrame().h;
+
+	/*
+	std::cout << "One Left: " << oneLeft << "\n" <<
+		"One Right: " << oneRight << "\n" <<
+		"Two Left: " << twoLeft << "\n" <<
+		"Two Right: " << twoRight << "\n" <<
+		"One Top: " << oneTop << "\n" <<
+		"One Bottom: " << oneBottom << "\n" <<
+		"Two Top: " << twoTop << "\n" <<
+		"Two Bottom: " << twoBottom << "\n";
+	*/
+
+	bool topBottomCollision = oneTop > twoBottom && oneBottom < twoTop;
+	bool sidewaysCollision = oneRight >= twoLeft && oneLeft <= twoRight;
+
+	if (topBottomCollision && sidewaysCollision)
+	{
+		return true;
+	}
+	return false;
+}
