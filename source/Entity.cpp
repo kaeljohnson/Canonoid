@@ -8,9 +8,11 @@ Entity::Entity()
 	m_currParentFrame.y = 0;
 	m_currParentFrame.w = 0;
 	m_currParentFrame.h = 0;
+
+	m_isCollidable = false;
 }
-Entity::Entity(int xPos,int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture) 
-	: state(xPos, yPos, xVel, yVel, physOn), m_texture(texture)
+Entity::Entity(int xPos,int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture, bool isCollidable) 
+	: state(xPos, yPos, xVel, yVel, physOn), m_texture(texture), m_isCollidable(isCollidable)
 {
 	m_currParentFrame.x = 0;
 	m_currParentFrame.y = 0;
@@ -44,6 +46,8 @@ void Entity::free()
 
 const bool Entity::collision(Entity& toCompare)
 {
+	if (toCompare.m_isCollidable == false) return false;
+
 	float oneLeft = state.getXPos();
 	float oneRight = state.getXPos() + getCurrFrame().w;
 	float twoLeft = toCompare.state.getXPos();
@@ -53,17 +57,6 @@ const bool Entity::collision(Entity& toCompare)
 	float oneBottom = state.getYPos() - getCurrFrame().h;
 	float twoTop = toCompare.state.getYPos();
 	float twoBottom = toCompare.state.getYPos() - toCompare.getCurrFrame().h;
-
-	/*
-	std::cout << "One Left: " << oneLeft << "\n" <<
-		"One Right: " << oneRight << "\n" <<
-		"Two Left: " << twoLeft << "\n" <<
-		"Two Right: " << twoRight << "\n" <<
-		"One Top: " << oneTop << "\n" <<
-		"One Bottom: " << oneBottom << "\n" <<
-		"Two Top: " << twoTop << "\n" <<
-		"Two Bottom: " << twoBottom << "\n";
-	*/
 
 	bool topBottomCollision = oneTop > twoBottom && oneBottom < twoTop;
 	bool sidewaysCollision = oneRight >= twoLeft && oneLeft <= twoRight;

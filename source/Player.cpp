@@ -4,20 +4,23 @@
 #include <stdio.h>
 #include <unordered_map>
 
-Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* playerSprite)
-	: Entity(x, y, xVel, yVel, physOn, playerSprite)
+Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* playerSprite, Level* level, std::vector<std::vector<Tile>>* levelMap)
+	: Entity(x, y, xVel, yVel, physOn, playerSprite, false)
 {
 	size_t frameIdx = 0;
 	size_t xStart = 0;
 
 	// After physics is implemented this will be an entire animation sprite sheet, not just a single player rect.
 	SDL_Rect& playerRect = getCurrFrame();
-	playerRect.x = 10;
+	playerRect.x = 8;
 	playerRect.y = 0;
-	playerRect.w = 44;
+	playerRect.w = 48;
 	playerRect.h = 64;
 
 	setCurrParentFrame(playerRect);
+
+	m_level = level;
+	m_levelMap = levelMap;
 }
 
 void Player::handleMoveInput(SDL_Event& e)
@@ -122,67 +125,77 @@ void Player::endWalkLeft()
 	state.setXVel(0);
 }
 
-void Player::move(float deltaTime, std::vector<Tile>& levelMap)
+void Player::move()
 {
-	state.setXPos(
-		state.getXPos() + state.getXVel() * deltaTime * 100
-	);
+	int levelHeight = m_level->getLevelHeight();
+	int levelWidth = m_level->getLevelWidth();
 
-	if (isColliding(levelMap))
-	{
-		state.setXPos(state.getXPos() - (state.getXVel()) * util::getTimeDelta() * 100);
-	}
-
-	state.setYPos(
-		state.getYPos() + state.getYVel() * deltaTime * 100
-	);
-
-	if (isColliding(levelMap))
-	{
-		state.setYPos(state.getYPos() - (state.getYVel()) * util::getTimeDelta() * 100);
-	}
-
-	// getCurrFrame().x = state.getXPos();
-	// getCurrFrame().w = 64;
-	// getCurrFrame().y = state.getYPos();
-	// getCurrFrame().h = 64;
-	
-
-
-	// Should probably refactor the following logic into a game objects function.
-	if (state.getYPos() > util::getScreenHeight() - 70)
+	if (state.getYPos() + 64 > levelHeight)
 	{
 		state.setYVel(0);
 		state.setYPos(state.getYPos() - WALK_VELOCITY);
 	}
 
-	if (state.getYPos() < 0)
+	if (state.getYPos() < 64)
 	{
 		state.setYVel(0);
 		state.setYPos(state.getYPos() + WALK_VELOCITY);
 	}
 
-	if (state.getXPos() < 0)
+	if (state.getXPos() < 64)
 	{
+
 		state.setXVel(0);
 		state.setXPos(state.getXPos() + WALK_VELOCITY);
+
 	}
 
-	if (state.getXPos() + 70 > util::getScreenWidth())
+	if (state.getXPos() + 64 > levelWidth)
 	{
 		state.setXVel(0);
 		state.setXPos(state.getXPos() - WALK_VELOCITY);
 	}
+
+	state.setXPos(
+		state.getXPos() + state.getXVel() * util::getTimeDelta() * 100
+	);
+
+	if (isColliding(m_levelMap))
+	{
+		state.setXPos(
+			state.getXPos() - (state.getXVel()) * util::getTimeDelta() * 100
+		);
+	}
+
+	state.setYPos(
+		state.getYPos() + state.getYVel() * util::getTimeDelta() * 100
+	);
+
+	if (isColliding(m_levelMap))
+	{
+		state.setYPos(
+			state.getYPos() - (state.getYVel()) * util::getTimeDelta() * 100
+		);
+	}
 }
 
-bool Player::isColliding(std::vector<Tile>& levelMap)
+bool Player::isColliding(std::vector<std::vector<Tile>>* levelMap)
 {
-	for (auto& mapSquare : levelMap)
+	for (auto& layer : *levelMap)
 	{
-		if (collision(mapSquare))
+		for (auto& tile : layer)
 		{
-			return true;
+			if (collision(tile))
+			{
+				return true;
+			}
 		}
 	}
 	return false;
+}
+
+void Player::render(float offsetX, float offsetY)
+{
+	state.setXPos( state.getXPos() - offsetX );
+	state.setYPos( state.getYPos() - offsetY );
 }

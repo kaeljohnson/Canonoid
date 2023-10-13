@@ -1,13 +1,31 @@
 #include "../include/Game.h"
 #include "../include/Entity.h"
 
-Game::Game(WindowRenderer& window, GameObjects& gameObjects)
-	: m_window(window), m_gameObjects(gameObjects)
-{
+Game::Game() : m_window(nullptr), m_gameObjects(nullptr), running(false)
+{}
 
+Game* Game::getInstance()
+{
+	if (pInstance == nullptr)
+	{
+		pInstance = new Game();
+
+		return pInstance;
+	}
+	else
+	{
+		return pInstance;
+	}
 }
 
-bool Game::handleUserInput(SDL_Event& e)
+void Game::initialize(WindowRenderer* window, GameObjects* gameObjects)
+{
+	m_window = window;
+	m_gameObjects = gameObjects;
+	running = false;
+}
+
+bool Game::handleInput(SDL_Event& e)
 {
 	if (e.type == SDL_QUIT) 
 	{
@@ -27,84 +45,52 @@ bool Game::handleUserInput(SDL_Event& e)
 			|| e.key.keysym.sym == SDLK_SPACE
 		)
 	{
-		m_gameObjects.getPlayer()->handleMoveInput(e);
-		// handle other player related input.
+		m_gameObjects->handleUserInput(e);
 	}
 
 	return true;
 }
 
-
-void Game::update(SDL_Event& e, double time, double deltaTime)
+void Game::update(SDL_Event& e)
 {
 	while (SDL_PollEvent(&e) != 0)
 	{
-		handleUserInput(e);
+		handleInput(e);
 	}
-	
-	//updatePlayer();
-	m_gameObjects.getPlayer()->move(deltaTime, m_gameObjects.getLevelMap());
-	
-	// applyPhysics(m_gameObjects);
+
+	m_gameObjects->moveObjects();
+
+	m_gameObjects->moveCamera();
+
+	m_gameObjects->setOffsets();
+
+	m_gameObjects->clampCamera();
 }
 
 void Game::renderGameObjects()
 {
 	// Need to only load part of the map in view.
-	m_gameObjects.renderMap();
-	m_window.render(*(m_gameObjects.getPlayer()));
+	m_gameObjects->renderViewableArea();
+
+	m_gameObjects->renderPlayer();
 }
 
 bool Game::start()
 {
 	SDL_Event e;
-	// loadGameStates(); // Each entity has-a state 
-	m_gameObjects.loadMap();
+	//m_gameObjects.loadMap();
 
 	running = true;
 
-	double latestTime = util::getAmountOfTimePassedFromStartInSeconds();
-	double timeStep = util::getTimeDelta();
-	double timeElapsed = 0.0f;
-	//double accumulator = 0.0f;
-
 	while (running)
-	{
-		double newTime = util::getAmountOfTimePassedFromStartInSeconds();
-		double frameTime = newTime - latestTime;
+	{	
+		update(e); // Update the physics of the simulation.
 
-		latestTime = newTime;
-		//accumulator += frameTime;
-
-		//while (accumulator >= timeStep) 
-		//{
-			// we can view all the object states in the gameObjects class, and have a container where we can store the previous states in
-			// so we can make this interpolation work.
-			// previousState = currentState;
-			// integrate(currentState, t, dt);
-			// t += dt;
-			// accumulator -= dt;
-
-		    // May want to pass frame time to handle any lags in the physics simulation.
-			update(e, timeElapsed, timeStep); // Update the physics of the simulation.
-
-			timeElapsed += timeStep;
-			//accumulator -= timeStep;
-		//}
-		//const double alpha = accumulator / timeStep;
-
-		//m_gameObjects.updateGameObjectStates(alpha, prevXForPlayer, prevYForPlayer); // Interpolate extra time in the accumulator for smooth rendering.
-		// Equation for interpolation: currentState * alpha + previousState* (1.0 - alpha);
-
-		// FYI: By current/previous state, it means all the current/previous states for all the objects positions for the time being. May need to adjust this definition
-		// when the physics get morde advanced.
-       
-
-		// Note: the physics updates are separate from the rendering updates.
+		// Note: the physics updates shuold be separate from the rendering updates.
 	    	
-		m_window.clearScreen();
+		m_window->clearScreen();
 		renderGameObjects();
-		m_window.display();
+		m_window->display();
 	}
 
 	return true;

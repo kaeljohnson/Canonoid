@@ -17,18 +17,28 @@ class Game
 {
 private:
 
-	bool running = false;
+	bool running;
 
-	WindowRenderer& m_window;
-	GameObjects& m_gameObjects;
+	WindowRenderer* m_window;
+	GameObjects* m_gameObjects;
+
+	Game();
+	static Game* pInstance;
 
 public:
-	Game(WindowRenderer& window, GameObjects& gameObjects);
+	static Game* getInstance();
 
-	bool handleUserInput(SDL_Event& e);
-	void update(SDL_Event& e, double time, double timeStep);
+	void initialize(WindowRenderer* window, GameObjects* gameObjects);
+
+	bool handleInput(SDL_Event& e);
+	void update(SDL_Event& e);
 	void renderGameObjects();
 
 	bool start();
 	bool stop();
+
+	Game(const Game& camera) = delete;
+	Game& operator=(const Game&) = delete;
+	Game(Game&&) = delete;
+	Game& operator=(Game&&) = delete;
 };

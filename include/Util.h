@@ -19,13 +19,13 @@ namespace util
 	inline const int getScreenWidth()
 	{
 		// Must be multiple of 64
-		return 1200;
+		return 1152;
 	}
 
 	inline const int getScreenHeight()
 	{
 		// Must be multiple of 64
-		return 720;
+		return 768;
 	}
 }
 

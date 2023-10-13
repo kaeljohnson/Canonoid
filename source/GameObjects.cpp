@@ -1,12 +1,22 @@
 #include "../include/GameObjects.h"
 #include "../include/Textures.h"
 #include "../include/Tile.h"
+#include "../include/Util.h"
+#include "../include/Levels.h"
+#include "../include/Camera.h"
 
-GameObjects::GameObjects(WindowRenderer& window, Level& level) : m_window(window), m_level(level)
+// Should make this a Singleton.
+GameObjects::GameObjects(WindowRenderer* window) : m_window(window), m_offsetX(0), m_offsetY(0)
 {
-	SDL_Texture* playerSprite = window.loadTexture(textureImages::getPlayerPng());
-	m_floorSprite = window.loadTexture(textureImages::getFloor1());
-	m_player = new Player(0, 0, 0, 0, true, playerSprite);
+	SDL_Texture* playerSprite = window->loadTexture(textureImages::getPlayerPng());
+	m_floorSprite = window->loadTexture(textureImages::getFloor1());
+
+	m_level = new Level(levels::getPlayground());
+	loadMap();
+
+	m_player = new Player(400, 200, 0, 0, true, playerSprite, m_level, &m_levelMap);
+
+	Camera::getInstance()->setCameraValues(0, 0, 0, 0, m_level, &m_levelMap);
 }
 
 Player* GameObjects::getPlayer()
@@ -14,48 +24,79 @@ Player* GameObjects::getPlayer()
 	return m_player;
 }
 
-void GameObjects::updateGameObjectStates(double alpha, double prevX, double prevY)
-{
-	// update all the entities states here.
-	// Need to distinguish between an object which can be updated and an object which can't 
-	// like a wall or the floor.
-
-	// for all objects on screen, update physics with interpolation equation.
-	//getPlayer()->move(deltaTime);
-	//currentState* alpha + previousState * (1.0 - alpha);
-	//getPlayer()->state.setXPos( getPlayer()->state.getXPos() * alpha + prevX * (1.0 - alpha) );
-	//getPlayer()->state.setYPos( getPlayer()->state.getYPos() * alpha + prevY * (1.0 - alpha) );
-}
-
-
 bool GameObjects::loadMap()
 {
-	int tempX = 0;
-	int tempY = 0;
+	int currXTile = 0;
+	int currYTile = 0;
+	std::vector<Tile> tempLayer;
 
-	for (auto& i : m_level.getMapString())
+	for (auto& i : m_level->getMapString())
 	{
-		if (tempX == 3200)
+		if (currXTile == m_level->getTileLevelWidth())
 		{
-			tempX = 0;
-			tempY += 64;
+			currXTile = 0;
+			currYTile += 1;
+
+			m_levelMap.push_back(tempLayer);
+			tempLayer = {};
 		}
 		if (i == 'g')
 		{
-			m_levelMap.push_back(Tile(tempX, tempY, m_floorSprite));
+			int xTileCoord = currXTile * 64;
+			int yTileCoord = currYTile * 64;
+			tempLayer.push_back(Tile(xTileCoord, yTileCoord, m_floorSprite, true));
 		}
-		tempX += 64;
+		if (i == '-')
+		{
+			int xTileCoord = currXTile * 64;
+			int yTileCoord = currYTile * 64;
+			tempLayer.push_back(Tile(xTileCoord, yTileCoord, nullptr, false));
+		}
+		currXTile += 1;
 	}
 
 	return true;
 }
 
-bool GameObjects::renderMap()
+void GameObjects::handleUserInput(SDL_Event& e)
 {
-	for (auto& tile : m_levelMap)
+	getPlayer()->handleMoveInput(e);
+}
+
+void GameObjects::moveObjects()
+{
+	getPlayer()->move();
+}
+
+bool GameObjects::renderViewableArea()
+{
+	for (int x = 0; x < 14; x++)
 	{
-		m_window.render(tile);
+		for (int y = 0; y < 50; y++)
+		{
+			Tile& currTile = m_levelMap[x][y];
+			m_window->render(currTile, m_offsetX, m_offsetY);
+		}
 	}
+
+	return true;
+}
+
+void GameObjects::moveCamera()
+{
+	Camera* pCamera = Camera::getInstance();
+	pCamera->move(getPlayer()->state.getXPos(), getPlayer()->state.getYPos());
+}
+
+void GameObjects::clampCamera()
+{
+	Camera* pCamera = Camera::getInstance();
+	pCamera->clamp(m_offsetX, m_offsetY);
+}
+
+bool GameObjects::renderPlayer()
+{
+	m_window->render(*(getPlayer()), m_offsetX, m_offsetY);
 
 	return true;
 }
@@ -63,12 +104,20 @@ bool GameObjects::renderMap()
 bool GameObjects::cleanUp()
 {
 	delete m_player;
+	delete m_level;
 
 	return true;
 }
 
-// std::unordered_map<bool, Tile>& GameObjects::getLevelMap()
-std::vector<Tile>& GameObjects::getLevelMap()
+std::vector<std::vector<Tile>>& GameObjects::getLevelMap()
 {
 	return m_levelMap;
+}
+
+void GameObjects::setOffsets()
+{
+	Camera* pCamera = Camera::getInstance();
+
+	m_offsetX = pCamera->getXValue() - (float)util::getScreenWidth() / 2;
+	m_offsetY = pCamera->getYValue() - (float)util::getScreenHeight() / 2;
 }

@@ -33,6 +33,7 @@
     <ClInclude Include="include\WindowRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\Entity.cpp" />
     <ClCompile Include="source\Game.cpp" />
     <ClCompile Include="source\GameObjects.cpp" />

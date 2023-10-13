@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "WindowRenderer.h"
 #include "Textures.h"
+#include "Camera.h"
+#include "Levels.h"
 #include "Tile.h"
 
 class GameObjects
@@ -15,18 +17,27 @@ class GameObjects
 private:
 	Player* m_player;
 	SDL_Texture* m_floorSprite;
-	Level& m_level;
-	WindowRenderer& m_window;
-	// std::unordered_map<bool, Tile> m_levelMap;
-	std::vector<Tile> m_levelMap;
+	WindowRenderer* m_window;
+	std::vector<std::vector<Tile>> m_levelMap;
+	Level* m_level;
+
+	float m_offsetX;
+	float m_offsetY;
 
 public:
-	GameObjects(WindowRenderer& window, Level& level);
-	Player* getPlayer();
-	std::vector<Tile>& getLevelMap();
-	void updateGameObjectStates(double alpha, double prevX, double prevY);
+	GameObjects(WindowRenderer* window);
 
+	Player* getPlayer();
+	std::vector<std::vector<Tile>>& getLevelMap();
+
+	void handleUserInput(SDL_Event& e);
+	void moveObjects();
+	void moveCamera();
+	void clampCamera();
+
+	void setOffsets();
 	bool loadMap();
-	bool renderMap();
+	bool renderViewableArea();
+	bool renderPlayer();
 	bool cleanUp();
 };

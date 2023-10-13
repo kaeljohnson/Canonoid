@@ -10,6 +10,9 @@
 #include "../include/Game.h"
 #include "../include/Textures.h"
 
+Camera* Camera::pInstance = nullptr;
+Game* Game::pInstance = nullptr;
+
 void initializeSDLFeatures() 
 {
 	if (!IMG_Init(IMG_INIT_PNG))
@@ -37,13 +40,13 @@ int main(int argc, char* args[])
 	initializeSDLFeatures();
 	
 	WindowRenderer window = initializeWindow();
-	Level playground(levels::getPlayground());
 
-	GameObjects gameObjects(window, playground);
-	Game newGame(window, gameObjects);
-
-	newGame.start();
-	newGame.stop();
+	GameObjects gameObjects(&window);
+	Game* newGame = Game::getInstance();
+	
+	newGame->initialize(&window, &gameObjects);
+	newGame->start();
+	newGame->stop();
 	
 	cleanUp(window);
 	gameObjects.cleanUp();

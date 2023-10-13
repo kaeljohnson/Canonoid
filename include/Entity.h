@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+
 #include "State.h"
 
 class Entity
@@ -10,11 +11,13 @@ private:
 	SDL_Rect m_currParentFrame;
 	SDL_Texture* m_texture = nullptr;
 
+	bool m_isCollidable;
+
 public:
 	State state;
 
 	Entity();
-	Entity(int xPos, int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture);
+	Entity(int xPos, int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture, bool isCollidable);
 
 	void setCurrParentFrame(SDL_Rect& currFrame);
 

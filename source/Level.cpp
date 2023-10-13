@@ -1,4 +1,5 @@
 #include "../include/Level.h"
+#include "../include/Textures.h"
 
 Level::Level(std::string stringToMap)
 	: mapString(stringToMap)
@@ -9,6 +10,16 @@ Level::Level(std::string stringToMap)
 std::string Level::getMapString()
 {
 	return mapString;
+}
+
+int Level::getTileLevelWidth()
+{
+	return m_numTilesLevelWidth;
+}
+
+int Level::getTileLevelHeight()
+{
+	return m_numTilesLevelHeight;
 }
 
 int Level::getLevelWidth()
