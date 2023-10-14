@@ -10,12 +10,11 @@
 GameObjects::GameObjects(WindowRenderer* window) : m_window(window), m_offsetX(0), m_offsetY(0)
 {
 	SDL_Texture* playerSprite = window->loadTexture(textureImages::getPlayerPng());
-	m_floorSprite = window->loadTexture(textureImages::getFloor1());
 
 	m_level = new Level(levels::getPlayground(), window);
 	m_player = new Player(400, 200, 0, 0, true, playerSprite, m_level);
 
-	Camera::getInstance()->setCameraValues(0, 0, 0, 0, m_level, &m_levelMap);
+	Camera::getInstance()->setCameraValues(0, 0, 0, 0, m_level);
 }
 
 Player* GameObjects::getPlayer()

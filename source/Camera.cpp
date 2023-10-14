@@ -3,7 +3,7 @@
 #include "../include/Camera.h"
 #include "../include/Util.h"
 
-Camera::Camera() : m_x(0), m_y(0), m_h(0), m_w(0), m_levelWidth(0), m_levelHeight(0), m_level(nullptr), m_levelMap(nullptr)
+Camera::Camera() : m_x(0), m_y(0), m_h(0), m_w(0), m_level(nullptr)
 {
 
 }
@@ -18,8 +18,8 @@ void Camera::clamp(float& offsetX, float& offsetY)
 {
 	if (offsetX < 0) { offsetX = 0; }
 	if (offsetY < 0) { offsetY = 0; }
-	if (offsetX + util::getScreenWidth() > m_levelWidth) { offsetX = m_levelWidth - util::getScreenWidth(); }
-	if (offsetY + util::getScreenHeight() > m_levelHeight) { offsetY = m_levelHeight - util::getScreenHeight(); }
+	if (offsetX + util::getScreenWidth() > m_level->getLevelWidth()) { offsetX = m_level->getLevelWidth() - util::getScreenWidth(); }
+	if (offsetY + util::getScreenHeight() > m_level->getLevelHeight()) { offsetY = m_level->getLevelHeight() - util::getScreenHeight(); }
 }
 
 Camera* Camera::getInstance()
@@ -36,16 +36,14 @@ Camera* Camera::getInstance()
 	}
 }
 
-void Camera::setCameraValues(float x, float y, int h, int w, Level* level, std::vector<std::vector<Tile>>* levelMap)
+void Camera::setCameraValues(float x, float y, int h, int w, Level* level)
 {
 	m_x = x;
 	m_y = y;
 	m_h = h;
 	m_w = w;
 
-	m_levelMap = levelMap;
-	m_levelWidth = level->getLevelWidth();
-	m_levelHeight = level->getLevelHeight();
+	m_level = level;
 }
 
 float Camera::getXValue()

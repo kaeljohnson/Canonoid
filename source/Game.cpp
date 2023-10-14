@@ -1,6 +1,11 @@
 #pragma once
 
+#include <SDL.h>
+#include <SDL_image.h>
+
 #include "../include/Game.h"
+#include "../include/WindowRenderer.h"
+#include "../include/GameObjects.h"
 
 Game::Game() : m_window(nullptr), m_gameObjects(nullptr), running(false)
 {}
@@ -79,7 +84,6 @@ void Game::renderGameObjects()
 bool Game::start()
 {
 	SDL_Event e;
-	//m_gameObjects.loadMap();
 
 	running = true;
 
