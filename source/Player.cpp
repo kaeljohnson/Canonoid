@@ -1,10 +1,14 @@
+#pragma once
+
 #include "../include/Player.h"
 #include "../include/Util.h"
 
 #include <stdio.h>
 #include <unordered_map>
 
-Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* playerSprite, Level* level, std::vector<std::vector<Tile>>* levelMap)
+Player::Player() : Entity() {}
+
+Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* playerSprite, Level* level)
 	: Entity(x, y, xVel, yVel, physOn, playerSprite, false)
 {
 	size_t frameIdx = 0;
@@ -17,10 +21,7 @@ Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* p
 	playerRect.w = 48;
 	playerRect.h = 64;
 
-	setCurrParentFrame(playerRect);
-
 	m_level = level;
-	m_levelMap = levelMap;
 }
 
 void Player::handleMoveInput(SDL_Event& e)
@@ -160,7 +161,7 @@ void Player::move()
 		state.getXPos() + state.getXVel() * util::getTimeDelta() * 100
 	);
 
-	if (isColliding(m_levelMap))
+	if (isColliding())
 	{
 		state.setXPos(
 			state.getXPos() - (state.getXVel()) * util::getTimeDelta() * 100
@@ -171,7 +172,7 @@ void Player::move()
 		state.getYPos() + state.getYVel() * util::getTimeDelta() * 100
 	);
 
-	if (isColliding(m_levelMap))
+	if (isColliding())
 	{
 		state.setYPos(
 			state.getYPos() - (state.getYVel()) * util::getTimeDelta() * 100
@@ -179,9 +180,9 @@ void Player::move()
 	}
 }
 
-bool Player::isColliding(std::vector<std::vector<Tile>>* levelMap)
+bool Player::isColliding()
 {
-	for (auto& layer : *levelMap)
+	for (auto& layer : *(m_level->getMap()))
 	{
 		for (auto& tile : layer)
 		{

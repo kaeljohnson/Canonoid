@@ -2,10 +2,7 @@
 
 #include <vector>
 
-#include "Util.h"
-#include "State.h"
-//#include "Tile.h"
-#include "Player.h"
+#include "Tile.h"
 #include "Level.h"
 
 class Camera

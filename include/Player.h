@@ -1,11 +1,12 @@
 #pragma once
 
+#include <SDL.h>
+#include <SDL_image.h>
 #include <vector>
 
-#include "WindowRenderer.h"
 #include "Entity.h"
-#include "State.h"
 #include "Tile.h"
+#include "Level.h"
 
 class Player : public Entity
 {
@@ -13,17 +14,17 @@ private:
 
 	// Not really sure how to handle the player moving around the level? For now just have a pointer to the level in here.
 	Level* m_level;
-	std::vector<std::vector<Tile>>* m_levelMap;
 
 	// If game loop totally dependent on time step then walk velocity needs to be multiplied
 	// by something dependent on the frame rate so there is no decline in player velocity between
 	// different monitor refresh rates.
-	static const int WALK_VELOCITY = 2;
+	const int WALK_VELOCITY = 2;
 
 	bool keys[256] = { false };
 
 public:
-	Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* player, Level* level, std::vector<std::vector<Tile>>* levelMap);
+	Player();
+	Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* player, Level* level);
 	void handleMoveInput(SDL_Event& e);
 	
 	void startWalkLeft();
@@ -35,6 +36,6 @@ public:
 	void endGoUp();
 	void endGoDown();
 	void move();
-	bool isColliding(std::vector<std::vector<Tile>>* levelMap);
+	bool isColliding();
 	void render(float offsetX, float offsetY);
 };

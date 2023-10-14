@@ -1,4 +1,7 @@
+#pragma once
+
 #include "../include/Camera.h"
+#include "../include/Util.h"
 
 Camera::Camera() : m_x(0), m_y(0), m_h(0), m_w(0), m_levelWidth(0), m_levelHeight(0), m_level(nullptr), m_levelMap(nullptr)
 {

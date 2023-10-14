@@ -1,4 +1,8 @@
+#pragma once
+
 #include "../include/Tile.h"
+
+Tile::Tile() : Entity() {}
 
 Tile::Tile(int x, int y, SDL_Texture* texture, bool isCollidable)
 	: Entity(x, y, 0, 0, false, texture, isCollidable)
@@ -9,5 +13,5 @@ Tile::Tile(int x, int y, SDL_Texture* texture, bool isCollidable)
 	blockRect.w = 64;
 	blockRect.h = 64;
 
-	setCurrParentFrame(blockRect);
+	//setCurrParentFrame(blockRect);
 }

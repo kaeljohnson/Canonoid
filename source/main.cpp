@@ -1,3 +1,4 @@
+#pragma once
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -9,6 +10,7 @@
 #include "../include/Util.h"
 #include "../include/Game.h"
 #include "../include/Textures.h"
+#include "../include/Camera.h"
 
 Camera* Camera::pInstance = nullptr;
 Game* Game::pInstance = nullptr;
@@ -22,12 +24,6 @@ void initializeSDLFeatures()
 		printf("SDL Init failed! SDL_Error: %s\n", SDL_GetError());
 }
 
-WindowRenderer& initializeWindow() 
-{
-	WindowRenderer window("Canonoid v1", util::getScreenWidth(), util::getScreenHeight());
-	return window;
-}
-
 void cleanUp(WindowRenderer& window) 
 {
 	window.free();
@@ -39,8 +35,7 @@ int main(int argc, char* args[])
 {
 	initializeSDLFeatures();
 	
-	WindowRenderer window = initializeWindow();
-
+	WindowRenderer window("Canonoid v1", util::getScreenWidth(), util::getScreenHeight());
 	GameObjects gameObjects(&window);
 	Game* newGame = Game::getInstance();
 	

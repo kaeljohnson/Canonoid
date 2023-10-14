@@ -1,5 +1,6 @@
+#pragma once
+
 #include "../include/Game.h"
-#include "../include/Entity.h"
 
 Game::Game() : m_window(nullptr), m_gameObjects(nullptr), running(false)
 {}
@@ -70,7 +71,7 @@ void Game::update(SDL_Event& e)
 void Game::renderGameObjects()
 {
 	// Need to only load part of the map in view.
-	m_gameObjects->renderViewableArea();
+	m_gameObjects->renderObjects();
 
 	m_gameObjects->renderPlayer();
 }

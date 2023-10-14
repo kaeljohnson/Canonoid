@@ -1,6 +1,9 @@
+#pragma once
+
+#include <stdio.h>
+
 #include "../include/Entity.h"
 #include "../include/Util.h"
-#include <stdio.h>
 
 Entity::Entity() 
 {

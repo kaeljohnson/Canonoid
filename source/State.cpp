@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../include/State.h"
 
 State::State()

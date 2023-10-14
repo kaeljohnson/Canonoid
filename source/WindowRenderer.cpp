@@ -1,9 +1,8 @@
+#pragma once
+#include <stdio.h>
+
 #include "../include/WindowRenderer.h"
 #include "../include/Entity.h"
-#include "../include/Tile.h"
-#include "../include/Util.h"
-
-#include <stdio.h>
 
 WindowRenderer::WindowRenderer(const char* windowTitle, int pixelWidth, int pixelHeight) 
 	: window ( nullptr ), renderer ( nullptr )
@@ -21,6 +20,7 @@ WindowRenderer::WindowRenderer(const char* windowTitle, int pixelWidth, int pixe
 	{
 		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 	}
+
 	SDL_SetRenderDrawColor(renderer, 'd3', 'd3', 'd3', SDL_ALPHA_OPAQUE);
 }
 
@@ -48,16 +48,8 @@ void WindowRenderer::clearScreen()
 void WindowRenderer::render(Entity& entity, float offsetX, float offsetY) 
 {
 	SDL_Rect src = { entity.getCurrFrame().x, entity.getCurrFrame().y, entity.getCurrFrame().w, entity.getCurrFrame().h };
-	// src.x = entity.getCurrFrame().x;
-	// src.y = entity.getCurrFrame().y;
-	// src.w = entity.getCurrFrame().w;
-	// src.h = entity.getCurrFrame().h;
 
 	SDL_Rect dst = { entity.state.getXPos() - offsetX, entity.state.getYPos() - offsetY, entity.getCurrFrame().w, entity.getCurrFrame().h };
-	// dst.x = entity.state.getXPos();
-	// dst.y = entity.state.getYPos();
-	// dst.w = entity.getCurrFrame().w;
-	// dst.h = entity.getCurrFrame().h;
 
 	SDL_RenderCopy(renderer, entity.getTexture(), &src, &dst);
 }

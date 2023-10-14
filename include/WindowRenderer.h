@@ -3,7 +3,6 @@
 #include <SDL_image.h>
 
 #include "Entity.h"
-#include "Level.h"
 
 class WindowRenderer 
 {

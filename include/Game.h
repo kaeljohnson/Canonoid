@@ -4,13 +4,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 
-#include "Player.h"
 #include "WindowRenderer.h"
-#include "Level.h"
-#include "Util.h"
-#include "Player.h"
-#include "Tile.h"
-#include "Textures.h"
 #include "GameObjects.h"
 
 class Game 

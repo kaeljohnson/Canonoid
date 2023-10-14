@@ -7,9 +7,6 @@
 
 #include "Player.h"
 #include "WindowRenderer.h"
-#include "Textures.h"
-#include "Camera.h"
-#include "Levels.h"
 #include "Tile.h"
 
 class GameObjects
@@ -38,6 +35,7 @@ public:
 	void setOffsets();
 	bool loadMap();
 	bool renderViewableArea();
+	bool renderObjects();
 	bool renderPlayer();
 	bool cleanUp();
 };
