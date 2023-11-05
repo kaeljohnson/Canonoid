@@ -14,7 +14,7 @@ public:
 	SDL_Texture* loadTexture(const char* filePath);
 	void cleanWindow();
 	void clearScreen();
-	void render(Entity& texture, float offsetX, float offsetY);
+	void render(Entity& entity, const float offsetX, const float offsetY, const float interpolation);
 	void display();
 	void free();
 };

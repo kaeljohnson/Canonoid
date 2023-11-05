@@ -6,8 +6,9 @@
 #include "../include/Game.h"
 #include "../include/WindowRenderer.h"
 #include "../include/GameObjects.h"
+#include "../include/Camera.h"
 
-Game::Game() : m_window(nullptr), m_gameObjects(nullptr), running(false)
+Game::Game() : ptrWindow(nullptr), ptrCamera(nullptr), ptrGameObjects(nullptr), running(false)
 {}
 
 Game* Game::getInstance()
@@ -24,10 +25,11 @@ Game* Game::getInstance()
 	}
 }
 
-void Game::initialize(WindowRenderer* window, GameObjects* gameObjects)
+void Game::initialize(WindowRenderer* window, Camera* camera, GameObjects* gameObjects)
 {
-	m_window = window;
-	m_gameObjects = gameObjects;
+	ptrWindow = window;
+	ptrCamera = camera;
+	ptrGameObjects = gameObjects;
 	running = false;
 }
 
@@ -51,7 +53,7 @@ bool Game::handleInput(SDL_Event& e)
 			|| e.key.keysym.sym == SDLK_SPACE
 		)
 	{
-		m_gameObjects->handleUserInput(e);
+		ptrGameObjects->handleUserInput(e);
 	}
 
 	return true;
@@ -64,21 +66,11 @@ void Game::update(SDL_Event& e)
 		handleInput(e);
 	}
 
-	m_gameObjects->moveObjects();
+	ptrGameObjects->moveObjects();
 
-	m_gameObjects->moveCamera();
+	// update physics
 
-	m_gameObjects->setOffsets();
-
-	m_gameObjects->clampCamera();
-}
-
-void Game::renderGameObjects()
-{
-	// Need to only load part of the map in view.
-	m_gameObjects->renderObjects();
-
-	m_gameObjects->renderPlayer();
+	ptrGameObjects->checkCollisions(); // Once there are more collidables on the screen which have physics applied to them we will need a function like this.
 }
 
 bool Game::start()
@@ -87,15 +79,35 @@ bool Game::start()
 
 	running = true;
 
+	const int TICKS_PER_SECOND = 100;														// Desired speed of game.
+	const float TIME_STEP = 1000.0 / TICKS_PER_SECOND;										// 10 ticks between updates.
+	const int MAX_NUM_UPDATES = 10;															// max number of updates per render, 10 fps is minimum playable.
+
+	Uint32 nextTick = SDL_GetTicks();														// count down times to next update.
+	Uint16 numUpdates;
+	float interpolation;																	// Come back to this.
+
 	while (running)
 	{	
-		update(e); // Update the physics of the simulation.
 
-		// Note: the physics updates shuold be separate from the rendering updates.
-	    	
-		m_window->clearScreen();
-		renderGameObjects();
-		m_window->display();
+		numUpdates = 0;
+		while (nextTick < SDL_GetTicks() && numUpdates < MAX_NUM_UPDATES)
+		{
+			update(e);
+		
+			nextTick += TIME_STEP;
+			numUpdates++;
+		}
+
+		// interpolation = float(SDL_GetTicks() + TIME_STEP - nextTick) / float(TIME_STEP);
+		
+		ptrGameObjects->moveCamera();
+		ptrGameObjects->setOffsets();
+		ptrGameObjects->clampCamera();
+
+		ptrWindow->clearScreen();
+		ptrGameObjects->renderObjects(/* interpolation */0);
+		ptrWindow->display();
 	}
 
 	return true;

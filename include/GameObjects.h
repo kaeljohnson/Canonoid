@@ -7,35 +7,44 @@
 
 #include "Player.h"
 #include "WindowRenderer.h"
-#include "Tile.h"
+#include "Camera.h"
+#include "Level.h"
+#include "PlayerConfig.h"
 
 class GameObjects
 {
 private:
-	Player* m_player;
-	SDL_Texture* m_floorSprite;
-	WindowRenderer* m_window;
-	std::vector<std::vector<Tile>> m_levelMap;
-	Level* m_level;
+	WindowRenderer& refWindow;
+	Camera& refCamera;
+	Level& refLevel;
+	Player* m_ptrPlayer;
+
+	std::vector<Entity*> collidableEntities;
+	std::vector<Entity*> moveableEntities;
 
 	float m_offsetX;
 	float m_offsetY;
 
 public:
-	GameObjects(WindowRenderer* window);
+	GameObjects(WindowRenderer& window, PlayerConfig& playerConfig, Camera& camera, Level& level);
 
 	Player* getPlayer();
-	std::vector<std::vector<Tile>>& getLevelMap();
 
 	void handleUserInput(SDL_Event& e);
+
 	void moveObjects();
 	void moveCamera();
 	void clampCamera();
 
 	void setOffsets();
-	bool loadMap();
-	bool renderViewableArea();
-	bool renderObjects();
-	bool renderPlayer();
+	const float getCurrentOffsetX() const;
+	const float getCurrentOffsetY() const;
+
+	void checkCollisions();
+
+	void interpolateObjectStates(float alpha);
+
+	bool renderObjects(const float interpolation);
+
 	bool cleanUp();
 };

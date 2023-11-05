@@ -1,47 +1,43 @@
 #pragma once
 
-#include "../include/Player.h"
-#include "../include/Util.h"
-
 #include <stdio.h>
-#include <unordered_map>
 
-Player::Player() : Entity() {}
+#include "../include/Player.h"
+#include "../include/PlayerConfig.h"
 
-Player::Player(int x, int y, float xVel, float yVel, bool physOn, SDL_Texture* playerSprite, Level* level)
-	: Entity(x, y, xVel, yVel, physOn, playerSprite, false)
-{
-	// size_t frameIdx = 0;
-	// size_t xStart = 0;
-
-	// After physics is implemented this will be an entire animation sprite sheet, not just a single player rect.
-	SDL_Rect& playerRect = getCurrFrame();
-	playerRect.x = 8;
-	playerRect.y = 0;
-	playerRect.w = 48;
-	playerRect.h = 64;
-
-	m_level = level;
-}
+Player::Player(PlayerConfig& playerConfig)
+	  : m_walkVel(playerConfig.m_playerWalkVelocity),
+		Entity(playerConfig.m_ptrPlayerTexture, 
+		       playerConfig.m_playerStartingX,
+		       playerConfig.m_playerStartingY, 
+		       0, 
+		       0, 
+		       true, 
+		       false, 
+		       playerConfig.m_textureStartX, 
+		       playerConfig.m_textureStartY, 
+		       playerConfig.m_textureEndX, 
+		       playerConfig.m_textureEndY)
+{}
 
 void Player::handleMoveInput(SDL_Event& e)
 {
-	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+	if (e.type == SDL_KEYDOWN&& e.key.repeat == 0)
 	{
 		keys[e.key.keysym.sym] = true;
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_a:
-			startWalkLeft();
+			state.setXVel(-m_walkVel);
 			break;
 		case SDLK_d:
-			startWalkRight();
+			state.setXVel(m_walkVel);
 			break;
 		case SDLK_w:
-			goUp();
+			state.setYVel(-m_walkVel);
 			break;
 		case SDLK_s:
-			goDown();
+			state.setYVel(m_walkVel);
 			break;
 		}
 	}
@@ -53,146 +49,48 @@ void Player::handleMoveInput(SDL_Event& e)
 		case SDLK_a:
 		{
 			if (keys[SDLK_d] == true)
-				startWalkRight();
+				state.setXVel(m_walkVel);
 			else
-				endWalkLeft();
+				state.setXVel(0);
 			break;
 		}
 		case SDLK_d:
 		{
 			if (keys[SDLK_a] == true)
-				startWalkLeft();
+				state.setXVel(-m_walkVel);
 			else
-				endWalkRight();
+				state.setXVel(0);
 			break;
 		}
 		case SDLK_w:
 		{
 			if (keys[SDLK_s] == true)
-				goDown();
+				state.setYVel(m_walkVel);
 			else
-				endGoUp();
+				state.setYVel(0);
 			break;
 		}
 		case SDLK_s:
 		{
 			if (keys[SDLK_w] == true)
-				goUp();
+				state.setYVel(-m_walkVel);
 			else
-				endGoDown();
+				state.setYVel(0);
 			break;
 		}
 		}
 	}
 }
 
-void Player::startWalkRight()
-{
-	state.setXVel(WALK_VELOCITY);
-}
-
-void Player::startWalkLeft()
-{
-	state.setXVel(-WALK_VELOCITY);
-}
-
-void Player::goDown()
-{
-	state.setYVel(WALK_VELOCITY);
-}
-
-void Player::goUp()
-{
-	state.setYVel(-WALK_VELOCITY);
-}
-
-void Player::endGoDown()
-{
-	state.setYVel(0);
-}
-
-void Player::endGoUp()
-{
-	state.setYVel(0);
-}
-
-void Player::endWalkRight()
-{
-	state.setXVel(0);
-}
-
-void Player::endWalkLeft()
-{
-	state.setXVel(0);
-}
-
 void Player::move()
 {
-	int levelHeight = m_level->getLevelHeight();
-	int levelWidth = m_level->getLevelWidth();
-
-	if (state.getYPos() + 64 > levelHeight)
-	{
-		state.setYVel(0);
-		state.setYPos(state.getYPos() - WALK_VELOCITY);
-	}
-
-	if (state.getYPos() < 64)
-	{
-		state.setYVel(0);
-		state.setYPos(state.getYPos() + WALK_VELOCITY);
-	}
-
-	if (state.getXPos() < 64)
-	{
-
-		state.setXVel(0);
-		state.setXPos(state.getXPos() + WALK_VELOCITY);
-
-	}
-
-	if (state.getXPos() + 64 > levelWidth)
-	{
-		state.setXVel(0);
-		state.setXPos(state.getXPos() - WALK_VELOCITY);
-	}
-
 	state.setXPos(
-		state.getXPos() + state.getXVel() * util::getTimeDelta() * 100
+		state.getXPos() + state.getXVel()
 	);
-
-	if (isColliding())
-	{
-		state.setXPos(
-			state.getXPos() - (state.getXVel()) * util::getTimeDelta() * 100
-		);
-	}
 
 	state.setYPos(
-		state.getYPos() + state.getYVel() * util::getTimeDelta() * 100
+		state.getYPos() + state.getYVel()
 	);
-
-	if (isColliding())
-	{
-		state.setYPos(
-			state.getYPos() - (state.getYVel()) * util::getTimeDelta() * 100
-		);
-	}
-}
-
-bool Player::isColliding()
-{
-	for (auto& layer : *(m_level->getMap()))
-	{
-		for (auto& tile : layer)
-		{
-			if (collision(tile))
-			{
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 void Player::render(float offsetX, float offsetY)

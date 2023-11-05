@@ -3,39 +3,50 @@
 #include <string>
 
 #include "../include/Level.h"
-#include "../include/Textures.h"
 #include "../include/WindowRenderer.h"
+#include "../include/Levels.h"
+#include "../include/Tile.h"
 
-Level::Level(std::string stringToMap, WindowRenderer* window)
-	: mapString(stringToMap), m_window(window)
+Level::Level(WindowRenderer* window, std::unordered_map<std::string, SDL_Texture*>& levelTextures)
+	: ptrWindow(window), ptrFloorTexture(levelTextures.at("floor1")), playerStartingX(0), playerStartingY(0)
 {
-	m_floorTexture = m_window->loadTexture(textureImages::getFloor1());
+	levels::getBigPlayground(m_levelDetails);
 	loadMap();
 }
 
-std::string Level::getMapString()
+const std::string& Level::getMapString() const
 {
-	return mapString;
+	return m_levelDetails.m_levelString;
 }
 
-int Level::getTileLevelWidth()
+const float Level::getTileLevelWidth() const
 {
-	return m_numTilesLevelWidth;
+	return m_levelDetails.m_levelWidthInTiles;
 }
 
-int Level::getTileLevelHeight()
+const float Level::getTileLevelHeight() const
 {
-	return m_numTilesLevelHeight;
+	return m_levelDetails.m_levelHeightInTiles;
 }
 
-int Level::getLevelWidth()
+const float Level::getLevelWidth() const
 {
-	return m_levelWidth;
+	return m_levelDetails.m_levelWidthInPixels;
 }
 
-int Level::getLevelHeight()
+const float Level::getLevelHeight() const
 {
-	return m_levelHeight;
+	return m_levelDetails.m_levelHeightInPixels;
+}
+
+const float Level::getTileWidthInPixels() const
+{
+	return m_levelDetails.m_tileWidthInPixels;
+}
+
+const float Level::getTileHeightInPixels() const
+{
+	return m_levelDetails.m_tileHeightInPixels;
 }
 
 bool Level::loadMap()
@@ -44,9 +55,9 @@ bool Level::loadMap()
 	int currYTile = 0;
 	std::vector<Tile> tempLayer;
 
-	for (auto& i : mapString)
+	for (auto& i : m_levelDetails.m_levelString)
 	{
-		if (currXTile == m_numTilesLevelWidth)
+		if (currXTile == m_levelDetails.m_levelWidthInTiles)
 		{
 			currXTile = 0;
 			currYTile += 1;
@@ -56,37 +67,71 @@ bool Level::loadMap()
 		}
 		if (i == 'g')
 		{
-			int xTileCoord = currXTile * 64;
-			int yTileCoord = currYTile * 64;
-			tempLayer.push_back(Tile(xTileCoord, yTileCoord, m_floorTexture, true));
+			int xTileCoord = currXTile * m_levelDetails.m_tileWidthInPixels;
+			int yTileCoord = currYTile * m_levelDetails.m_tileHeightInPixels;
+			tempLayer.push_back(Tile(xTileCoord, yTileCoord, ptrFloorTexture, true, m_levelDetails.m_tileWidthInPixels, m_levelDetails.m_tileHeightInPixels));
 		}
 		if (i == '-')
 		{
-			int xTileCoord = currXTile * 64;
-			int yTileCoord = currYTile * 64;
-			tempLayer.push_back(Tile(xTileCoord, yTileCoord, nullptr, false));
+			int xTileCoord = currXTile * m_levelDetails.m_tileWidthInPixels;
+			int yTileCoord = currYTile * m_levelDetails.m_tileHeightInPixels;
+			tempLayer.push_back(Tile(xTileCoord, yTileCoord, nullptr, false, m_levelDetails.m_tileWidthInPixels, m_levelDetails.m_tileHeightInPixels));
+		}
+		if (i == 'p')
+		{
+			int xTileCoord = currXTile * m_levelDetails.m_tileWidthInPixels;
+			int yTileCoord = currYTile * m_levelDetails.m_tileHeightInPixels;
+			playerStartingX = xTileCoord;
+			playerStartingY = yTileCoord;
+			tempLayer.push_back(Tile(xTileCoord, yTileCoord, nullptr, false, m_levelDetails.m_tileWidthInPixels, m_levelDetails.m_tileHeightInPixels));
 		}
 		currXTile += 1;
 	}
 
+	m_map.push_back(tempLayer);
+
 	return true;
 }
 
-bool Level::renderViewableArea(float offsetX, float offsetY)
+bool Level::renderViewableArea(const float offsetX, const float offsetY, const float cameraWidth, const float cameraHeight, const float interpolation)
 {
-	for (int x = 0; x < 14; x++)
+	int firstViewableTileX = (int)(offsetX / 64);
+	int firstViewableTileY = (int)(offsetY / 64);
+
+	int lastViewableTileX = firstViewableTileX + (int)(cameraWidth / 64) + 1;
+	int lastViewableTileY = firstViewableTileY + (int)(cameraHeight / 64) + 1;
+
+	lastViewableTileX = lastViewableTileX > m_levelDetails.m_levelWidthInTiles ? m_levelDetails.m_levelWidthInTiles : lastViewableTileX;
+	lastViewableTileY = lastViewableTileY > m_levelDetails.m_levelHeightInTiles ? m_levelDetails.m_levelHeightInTiles : lastViewableTileY;
+
+	for (int layer = firstViewableTileY; layer < lastViewableTileY; layer++)
 	{
-		for (int y = 0; y < 50; y++)
+		for (int column = firstViewableTileX; column < lastViewableTileX; column++)
 		{
-			Tile& currTile = m_map[x][y];
-			m_window->render(currTile, offsetX, offsetY);
+			Tile& currTile = m_map[layer][column];
+			ptrWindow->render(currTile, offsetX, offsetY, interpolation);
 		}
 	}
 
 	return true;
 }
 
-std::vector<std::vector<Tile>>* Level::getMap()
+const std::vector<std::vector<Tile>>& Level::getMap() const
 {
-	return &m_map;
+	return m_map;
+}
+
+const float Level::getPlayerStartingX() const
+{
+	return playerStartingX;
+}
+
+const float Level::getPlayerStartingY() const
+{
+	return playerStartingY;
+}
+
+const LevelDetails& Level::getLevelDetails() const
+{
+	return m_levelDetails;
 }

@@ -3,17 +3,17 @@
 
 namespace util
 {
-	inline double getAmountOfTimePassedFromStartInSeconds()
+	inline float getAmountOfTimePassedFromStartInSeconds()
 	{
-		double t = SDL_GetTicks();
+		float t = SDL_GetTicks();
 		t *= 0.001f;
 
 		return t;
 	}
 
-	inline const double getTimeDelta()
+	inline const float getTimeDelta()
 	{
-		return 1.00 / 100.00f;
+		return 1.0 / 100.0f;
 	}
 
 	inline const int getScreenWidth()
@@ -28,4 +28,3 @@ namespace util
 		return 768;
 	}
 }
-

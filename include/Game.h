@@ -6,15 +6,16 @@
 
 #include "WindowRenderer.h"
 #include "GameObjects.h"
+#include "Camera.h"
 
 class Game 
 {
 private:
-
 	bool running;
 
-	WindowRenderer* m_window;
-	GameObjects* m_gameObjects;
+	WindowRenderer* ptrWindow;
+	Camera* ptrCamera;
+	GameObjects* ptrGameObjects;
 
 	Game();
 	static Game* pInstance;
@@ -22,11 +23,10 @@ private:
 public:
 	static Game* getInstance();
 
-	void initialize(WindowRenderer* window, GameObjects* gameObjects);
+	void initialize(WindowRenderer* window, Camera* camera, GameObjects* gameObjects);
 
 	bool handleInput(SDL_Event& e);
 	void update(SDL_Event& e);
-	void renderGameObjects();
 
 	bool start();
 	bool stop();

@@ -4,14 +4,7 @@
 
 Tile::Tile() : Entity() {}
 
-Tile::Tile(int x, int y, SDL_Texture* texture, bool isCollidable)
-	: Entity(x, y, 0, 0, false, texture, isCollidable)
+Tile::Tile(float x, float y, SDL_Texture* texture, bool isCollidable, float tileWidth, float tileHeight)
+	: Entity(texture, x, y, 0, 0, false, isCollidable, 0, 0, tileWidth, tileHeight)
 {
-	SDL_Rect& blockRect = getCurrFrame();
-	blockRect.x = 0;
-	blockRect.y = 0;
-	blockRect.w = 64;
-	blockRect.h = 64;
-
-	//setCurrParentFrame(blockRect);
 }

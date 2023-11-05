@@ -11,21 +11,36 @@ private:
 	SDL_Rect m_currParentFrame;
 	SDL_Texture* m_texture = nullptr;
 
+protected:
+	State state;
+public:
 	bool m_isCollidable;
 
-public:
-	State state;
-
 	Entity();
-	Entity(int xPos, int yPos, float xVel, float yVel, bool physOn, SDL_Texture* texture, bool isCollidable);
+	Entity(SDL_Texture* texture, 
+		float xPos, float yPos, 
+		float xVel, float yVel, 
+		bool physOn, bool isCollidable, 
+		float textureStartingX, float textureStartingY, 
+		float textureEndingX, float textureEndingY);
 
 	void setCurrParentFrame(SDL_Rect& currFrame);
 
-	SDL_Texture* getTexture();
-	SDL_Rect& getCurrFrame();
-	void free();
-	const bool collision(Entity&);
+	SDL_Texture* getTexture() const;
+	const SDL_Rect& getCurrFrame() const;
+	const State& getState() const;
 
-	// TO-DO: Need a way to either implicitily or explicitly determine if an entity is affected by physics or is not.
-	// I.E. Architecture tiles are not affected by physics.
+	void setPrevStateX(float x, float xVel);
+	void setPrevStateY(float y, float YVel);
+	void setStateX(float newX, float newXVel);
+	void setStateY(float newY, float newYVel);
+
+	virtual void move();
+
+	bool collision(const Entity&);
+	void collision(const Entity& topLeft, const Entity& topRight, const Entity& bottomLeft, const Entity& bottomRight);
+	bool collisionX(const Entity& toComp);
+	bool collisionY(const Entity& toComp);
+
+	void free();
 };

@@ -1,8 +1,13 @@
 #pragma once
+
 #include <stdio.h>
+#include <SDL.h>
+#include <SDL_image.h>
 
 #include "../include/WindowRenderer.h"
 #include "../include/Entity.h"
+#include "../include/State.h"
+
 
 WindowRenderer::WindowRenderer(const char* windowTitle, int pixelWidth, int pixelHeight) 
 	: window ( nullptr ), renderer ( nullptr )
@@ -45,11 +50,29 @@ void WindowRenderer::clearScreen()
 	SDL_RenderClear(renderer);
 }
 
-void WindowRenderer::render(Entity& entity, float offsetX, float offsetY) 
+void WindowRenderer::render(Entity& entity, const float offsetX, const float offsetY, const float interpolation) 
 {
+	const State& entityState = entity.getState();
+
 	SDL_Rect src = { entity.getCurrFrame().x, entity.getCurrFrame().y, entity.getCurrFrame().w, entity.getCurrFrame().h };
 
-	SDL_Rect dst = { entity.state.getXPos() - offsetX, entity.state.getYPos() - offsetY, entity.getCurrFrame().w, entity.getCurrFrame().h };
+	bool interpolationOff = true;
+
+	SDL_Rect dst;
+
+	if (interpolationOff)
+	dst = {(int)entityState.getXPos() - (int)offsetX,
+		(int)entityState.getYPos() - (int)offsetY, 
+		entity.getCurrFrame().w, 
+		entity.getCurrFrame().h};
+	else
+	dst = {(int)((entityState.getXPos() - offsetX) * interpolation + ((entityState.getPrevXPos() - offsetX) * (1.0 - interpolation))),
+		(int)((entityState.getYPos() - offsetY) * interpolation + ((entityState.getPrevYPos() - offsetY) * (1.0 - interpolation))),
+		entity.getCurrFrame().w,
+		entity.getCurrFrame().h };
+
+	entity.setPrevStateX(entityState.getXPos(), 0);
+	entity.setPrevStateY(entityState.getYPos(), 0);
 
 	SDL_RenderCopy(renderer, entity.getTexture(), &src, &dst);
 }

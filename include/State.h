@@ -1,9 +1,13 @@
 #pragma once
-#include <iostream>
 
 class State
 {
 protected:
+	float prevXPos;
+	float prevYPos;
+	float prevXVel;
+	float prevYVel;
+
 	float xPos;
 	float yPos;
 	float xVel;
@@ -15,19 +19,35 @@ public:
 
 	State(float startXPos, float startYPos, float startXVel, float startYVel, bool physOn);
 
-	void setXPos(double newXPos);
+	void setXPos(float newXPos);
 
-	void setYPos(double newYPos);
+	void setYPos(float newYPos);
 
-	void setXVel(double newXVel);
+	void setXVel(float newXVel);
 
-	void setYVel(double newYVel);
+	void setYVel(float newYVel);
 
-    double getXPos();
+	void setPrevXPos(float newXPos);
 
-	double getYPos();
+	void setPrevYPos(float newYPos);
 
-	double getXVel();
+	void setPrevXVel(float newXVel);
 
-	double getYVel();
+	void setPrevYVel(float newYVel);
+
+	const float getPrevXPos() const;
+
+	const float getPrevYPos() const;
+
+	const float getPrevXVel() const;
+
+	const float getPrevYVel() const;
+
+    const float getXPos() const;
+
+	const float getYPos() const;
+
+	const float getXVel() const;
+
+	const float getYVel() const;
 };

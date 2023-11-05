@@ -1,37 +1,42 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "Tile.h"
 #include "WindowRenderer.h"
+#include "LevelDetails.h"
 
 class Level 
 {
 private:
-	std::string mapString;
-	const int m_numTilesLevelWidth = 50;
-	const int m_numTilesLevelHeight = 15;
+	LevelDetails m_levelDetails;
 
-	const int m_levelWidth = 3200;
-	const int m_levelHeight = 960;
-	const int m_tileWidth = 64;
-	const int m_tileHeight = 64;
+	float playerStartingX;
+	float playerStartingY;
 
-	WindowRenderer* m_window;
+	WindowRenderer* ptrWindow;
 
 	std::vector<std::vector<Tile>> m_map;
-	SDL_Texture* m_floorTexture;
+	SDL_Texture* ptrFloorTexture;
 
 public:
-	Level(std::string stringToMap, WindowRenderer* window);
 
-	std::string getMapString();
-	int getLevelWidth();
-	int getLevelHeight();
-	int getTileLevelWidth();
-	int getTileLevelHeight();
-	bool renderViewableArea(float offsetX, float offsetY);
-	std::vector<std::vector<Tile>>* getMap();
+	Level(WindowRenderer* window, std::unordered_map<std::string, SDL_Texture*>& levelTextures);
+
+	const std::string& getMapString() const;
+	const float getLevelWidth() const;
+	const float getLevelHeight() const;
+	const float getTileLevelWidth() const;
+	const float getTileLevelHeight() const;
+	const float getTileWidthInPixels() const;
+	const float getTileHeightInPixels() const;
+	const float getPlayerStartingX() const;
+	const float getPlayerStartingY() const;
+	const LevelDetails& getLevelDetails() const;
+	const std::vector<std::vector<Tile>>& getMap() const;
+
+	bool renderViewableArea(const float offsetX, const float offsetY, const float cameraWidth, const float cameraHeight, const float interpolation);
 
 	bool loadMap();
 };
