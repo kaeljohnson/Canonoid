@@ -3,13 +3,30 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "Entity.h"
+#include "State.h"
 
-class Tile : public Entity
+class Tile
 {
 private:
+	SDL_Rect m_tileFrame;
 	SDL_Texture* m_texture = nullptr;
+	int m_x;
+	int m_y;
+	bool m_isCollidable;
+	int m_tileWidth;
+	int m_tileHeight;
 public:
 	Tile();
-	Tile(float x, float y, SDL_Texture* texture, bool isCollidable, float tileWidth, float tileHeight);
+	Tile(int x, int y, SDL_Texture* texture, bool isCollidable, int tileWidth, int tileHeight);
+
+	const int getXPos() const;
+	const int getYPos() const;
+	const int getTileWidth() const;
+	const int getTileHeight() const;
+	const bool getIsCollidable() const;
+	const SDL_Rect& getTileFrame() const;
+	SDL_Texture* getTexture() const;
+
+	void setXPos(float x);
+	void setYPos(float y);
 };

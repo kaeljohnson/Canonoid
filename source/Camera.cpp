@@ -5,7 +5,7 @@
 
 Camera::Camera() : m_x(0), m_y(0), m_h(0), m_w(0), valLevelWidth(0), valLevelHeight(0) {}
 
-Camera::Camera(float x, float y, float w, float h, float levelWidth, float levelHeight)
+Camera::Camera(float x, float y, const float w, const float h, const int levelWidth, const int levelHeight)
 	: m_x(x), m_y(y), m_w(w), m_h(h), valLevelWidth(levelWidth), valLevelHeight(levelHeight) {}
 
 void Camera::move(float x, float y)

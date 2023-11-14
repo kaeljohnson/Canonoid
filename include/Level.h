@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "Tile.h"
-#include "WindowRenderer.h"
+#include "Renderer.h"
 #include "LevelDetails.h"
 
 class Level 
@@ -15,22 +15,18 @@ private:
 	float playerStartingX;
 	float playerStartingY;
 
-	WindowRenderer* ptrWindow;
+	Renderer* ptrWindow;
 
 	std::vector<std::vector<Tile>> m_map;
 	SDL_Texture* ptrFloorTexture;
 
 public:
 
-	Level(WindowRenderer* window, std::unordered_map<std::string, SDL_Texture*>& levelTextures);
+	Level(Renderer* window, std::unordered_map<std::string, SDL_Texture*>& levelTextures);
 
 	const std::string& getMapString() const;
-	const float getLevelWidth() const;
-	const float getLevelHeight() const;
-	const float getTileLevelWidth() const;
-	const float getTileLevelHeight() const;
-	const float getTileWidthInPixels() const;
-	const float getTileHeightInPixels() const;
+	const int getLevelWidth() const;
+	const int getLevelHeight() const;
 	const float getPlayerStartingX() const;
 	const float getPlayerStartingY() const;
 	const LevelDetails& getLevelDetails() const;

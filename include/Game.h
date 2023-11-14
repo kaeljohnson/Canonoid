@@ -2,9 +2,8 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
-#include <stdio.h>
 
-#include "WindowRenderer.h"
+#include "Renderer.h"
 #include "GameObjects.h"
 #include "Camera.h"
 
@@ -13,7 +12,7 @@ class Game
 private:
 	bool running;
 
-	WindowRenderer* ptrWindow;
+	Renderer* ptrWindow;
 	Camera* ptrCamera;
 	GameObjects* ptrGameObjects;
 
@@ -23,15 +22,15 @@ private:
 public:
 	static Game* getInstance();
 
-	void initialize(WindowRenderer* window, Camera* camera, GameObjects* gameObjects);
+	void initialize(Renderer* window, Camera* camera, GameObjects* gameObjects);
 
 	bool handleInput(SDL_Event& e);
-	void update(SDL_Event& e);
+	void update();
 
 	bool start();
 	bool stop();
 
-	Game(const Game& camera) = delete;
+	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
 	Game(Game&&) = delete;
 	Game& operator=(Game&&) = delete;

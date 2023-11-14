@@ -1,20 +1,19 @@
 #pragma once
 
 #include <SDL.h>
-#include <SDL_image.h>
-#include <stdio.h>
 #include <vector>
 
 #include "Player.h"
-#include "WindowRenderer.h"
+#include "Renderer.h"
 #include "Camera.h"
 #include "Level.h"
 #include "PlayerConfig.h"
+#include "Entity.h"
 
 class GameObjects
 {
 private:
-	WindowRenderer& refWindow;
+	Renderer& refWindow;
 	Camera& refCamera;
 	Level& refLevel;
 	Player* m_ptrPlayer;
@@ -26,19 +25,21 @@ private:
 	float m_offsetY;
 
 public:
-	GameObjects(WindowRenderer& window, PlayerConfig& playerConfig, Camera& camera, Level& level);
+	GameObjects(Renderer& window, Player* playerConfig, Camera& camera, Level& level);
 
 	Player* getPlayer();
 
 	void handleUserInput(SDL_Event& e);
+	
+	void updatePhysics();
 
+	//void setNextPotentialStates();
+	
 	void moveObjects();
 	void moveCamera();
 	void clampCamera();
 
 	void setOffsets();
-	const float getCurrentOffsetX() const;
-	const float getCurrentOffsetY() const;
 
 	void checkCollisions();
 

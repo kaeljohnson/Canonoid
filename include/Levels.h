@@ -3,6 +3,7 @@
 #include <string>
 
 #include "LevelDetails.h"
+#include "Util.h"
 
 // Need to come up with better level building interface.
 
@@ -36,18 +37,18 @@ namespace levels
 		levelDetails.m_levelWidthInTiles = 50;
 		levelDetails.m_levelHeightInTiles = 15;
 
-		levelDetails.m_levelWidthInPixels = 3200;
-		levelDetails.m_levelHeightInPixels = 960;
+		levelDetails.m_levelWidthInPixels = util::getTileDim() * 50;
+		levelDetails.m_levelHeightInPixels = util::getTileDim() * 15;
 
-		levelDetails.m_tileWidthInPixels = 64;
-		levelDetails.m_tileHeightInPixels = 64;
+		levelDetails.m_tileWidthInPixels = util::getTileDim();
+		levelDetails.m_tileHeightInPixels = util::getTileDim();
 	}
 
 	inline void getBigPlayground(LevelDetails& levelDetails)
 	{
 		std::string levelString;
 		              
-		levelString += "---g------------------------------------------------------------------------------------------------"; // 1
+		levelString += "---g-----------------------------------------p------------------------------------------------------"; // 1
 		levelString += "----------------------------------------------------------------------------------------------------"; // 2
 		levelString += "g-g--g-g--------------------------------------------------------------------------------------------"; // 3
 		levelString += "ggg-g------------------------------------------------------------------------------------g----------"; // 4
@@ -57,7 +58,7 @@ namespace levels
 		levelString += "-----------------------------------------------------------------------------------------gggg-------"; // 8
 		levelString += "---------------------------------------ggggggggggg-----------------------------------g--------------"; // 9
 		levelString += "--------------------g------------------g------------------------------------------------------------"; // 10
-		levelString += "------------g--g-g---------------------g------------------------------------gggg----------------p---"; // 11
+		levelString += "------------g--g-g---------------------g------------------------------------gggg--------------------"; // 11
 		levelString += "ggggggg-gggggggggggggggg-g-------------g------------------------------------------------------------"; // 12
 		levelString += "-----------------------g-ggg----gggggggg-----------------------g-g-----------------ggg--------------"; // 13
 		levelString += "-----------------------g-----ggg-------------------------------g-g----------------------------------"; // 14
@@ -73,13 +74,13 @@ namespace levels
 		levelDetails.m_levelWidthInTiles = 100;
 		levelDetails.m_levelHeightInTiles = 18;
 
-		levelDetails.m_levelWidthInPixels = 6400;
-		levelDetails.m_levelHeightInPixels = 1152;
+		levelDetails.m_levelWidthInPixels = util::getTileDim() * 100;
+		levelDetails.m_levelHeightInPixels = util::getTileDim() * 18;
 
 		// Eventually should be able to have any size tile -> dependent on the texture. i.e. Tile class should be in charge of its own size.
 
-		levelDetails.m_tileWidthInPixels = 64;
-		levelDetails.m_tileHeightInPixels = 64;
+		levelDetails.m_tileWidthInPixels = util::getTileDim();
+		levelDetails.m_tileHeightInPixels = util::getTileDim();
 	}
 }
 
@@ -108,9 +109,9 @@ inline void getLevel1(LevelDetails& levelDetails)
 	levelDetails.m_levelWidthInTiles = 50;
 	levelDetails.m_levelHeightInTiles = 15;
 
-	levelDetails.m_levelWidthInPixels = 3200;
-	levelDetails.m_levelHeightInPixels = 960;
+	levelDetails.m_levelWidthInPixels = util::getTileDim() * 50;
+	levelDetails.m_levelHeightInPixels = util::getTileDim() * 15;
 
-	levelDetails.m_tileWidthInPixels = 64;
-	levelDetails.m_tileHeightInPixels = 64;
+	levelDetails.m_tileWidthInPixels = util::getTileDim();
+	levelDetails.m_tileHeightInPixels = util::getTileDim();
 }

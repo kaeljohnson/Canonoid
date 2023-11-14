@@ -9,12 +9,12 @@ private:
 	float m_w;
 	float m_h;
 
-	float valLevelWidth;
-	float valLevelHeight;
+	int valLevelWidth;
+	int valLevelHeight;
 	
 public:
 	Camera();
-	Camera(float x, float y, float w, float h, float levelWidth, float levelHeight);
+	Camera(float x, float y, float w, float h, const int levelWidth, const int levelHeight);
 
 	Camera(const Camera& camera) = delete;
 	Camera& operator=(const Camera&) = delete;

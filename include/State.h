@@ -2,52 +2,31 @@
 
 class State
 {
-protected:
+public:
 	float prevXPos;
 	float prevYPos;
 	float prevXVel;
 	float prevYVel;
+	float prevXAccel;
+	float prevYAccel;
 
-	float xPos;
-	float yPos;
-	float xVel;
-	float yVel;
+	float currXPos;
+	float currYPos;
+	float currXVel;
+	float currYVel;
+	float currXAccel;
+	float currYAccel;
+
+	float nextXPos;
+	float nextYPos;
+	float nextXVel;
+	float nextYVel;
+	float nextXAccel;
+	float nextYAccel;
+
 	float mPhysOn;
 
-public:
 	State();
 
 	State(float startXPos, float startYPos, float startXVel, float startYVel, bool physOn);
-
-	void setXPos(float newXPos);
-
-	void setYPos(float newYPos);
-
-	void setXVel(float newXVel);
-
-	void setYVel(float newYVel);
-
-	void setPrevXPos(float newXPos);
-
-	void setPrevYPos(float newYPos);
-
-	void setPrevXVel(float newXVel);
-
-	void setPrevYVel(float newYVel);
-
-	const float getPrevXPos() const;
-
-	const float getPrevYPos() const;
-
-	const float getPrevXVel() const;
-
-	const float getPrevYVel() const;
-
-    const float getXPos() const;
-
-	const float getYPos() const;
-
-	const float getXVel() const;
-
-	const float getYVel() const;
 };

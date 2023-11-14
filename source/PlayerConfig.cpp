@@ -1,6 +1,6 @@
 #include "../include/PlayerConfig.h"
 
-PlayerConfig::PlayerConfig(SDL_Texture* playerTexture, float playerStartingX, float playerStartingY, float textureStartX, float textureEndX, float textureStartY, float textureEndY, float playerWalkVelocity, float playerRunVelocity, float playerJumpVelocity, bool physics)
+PlayerConfig::PlayerConfig(SDL_Texture* playerTexture, float playerStartingX, float playerStartingY, int textureStartX, int textureEndX, int textureStartY, int textureEndY, float playerWalkVelocity, float playerRunVelocity, float playerJumpVelocity, bool physics)
 	: m_ptrPlayerTexture(playerTexture), 
 	  m_playerStartingX(playerStartingX),
 	  m_playerStartingY(playerStartingY),

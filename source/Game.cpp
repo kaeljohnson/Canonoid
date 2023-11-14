@@ -1,10 +1,9 @@
 #pragma once
 
 #include <SDL.h>
-#include <SDL_image.h>
 
 #include "../include/Game.h"
-#include "../include/WindowRenderer.h"
+#include "../include/Renderer.h"
 #include "../include/GameObjects.h"
 #include "../include/Camera.h"
 
@@ -25,7 +24,7 @@ Game* Game::getInstance()
 	}
 }
 
-void Game::initialize(WindowRenderer* window, Camera* camera, GameObjects* gameObjects)
+void Game::initialize(Renderer* window, Camera* camera, GameObjects* gameObjects)
 {
 	ptrWindow = window;
 	ptrCamera = camera;
@@ -35,11 +34,11 @@ void Game::initialize(WindowRenderer* window, Camera* camera, GameObjects* gameO
 
 bool Game::handleInput(SDL_Event& e)
 {
-	if (e.type == SDL_QUIT) 
+	if (e.type == SDL_QUIT)
 	{
 		running = false;
 	}
-	else if (e.key.keysym.sym == SDLK_ESCAPE) 
+	else if (e.key.keysym.sym == SDLK_ESCAPE)
 	{
 		// open menu
 		running = false;
@@ -51,7 +50,7 @@ bool Game::handleInput(SDL_Event& e)
 			|| e.key.keysym.sym == SDLK_s
 			|| e.key.keysym.sym == SDLK_w
 			|| e.key.keysym.sym == SDLK_SPACE
-		)
+			)
 	{
 		ptrGameObjects->handleUserInput(e);
 	}
@@ -59,16 +58,13 @@ bool Game::handleInput(SDL_Event& e)
 	return true;
 }
 
-void Game::update(SDL_Event& e)
+void Game::update()
 {
-	while (SDL_PollEvent(&e) != 0)
-	{
-		handleInput(e);
-	}
-
 	ptrGameObjects->moveObjects();
 
 	// update physics
+
+	ptrGameObjects->updatePhysics();
 
 	ptrGameObjects->checkCollisions(); // Once there are more collidables on the screen which have physics applied to them we will need a function like this.
 }
@@ -79,28 +75,33 @@ bool Game::start()
 
 	running = true;
 
-	const int TICKS_PER_SECOND = 100;														// Desired speed of game.
-	const float TIME_STEP = 1000.0 / TICKS_PER_SECOND;										// 10 ticks between updates.
+	int TICKS_PER_SECOND = 100;														// Desired speed of game.
+	const float TIME_STEP = (float)(1000.0 / TICKS_PER_SECOND);							    // 10 ticks between updates.
 	const int MAX_NUM_UPDATES = 10;															// max number of updates per render, 10 fps is minimum playable.
 
 	Uint32 nextTick = SDL_GetTicks();														// count down times to next update.
 	Uint16 numUpdates;
-	float interpolation;																	// Come back to this.
+	// float interpolation;																	// Come back to this.
 
 	while (running)
-	{	
+	{
 
 		numUpdates = 0;
 		while (nextTick < SDL_GetTicks() && numUpdates < MAX_NUM_UPDATES)
 		{
-			update(e);
-		
-			nextTick += TIME_STEP;
+			while (SDL_PollEvent(&e) != 0)
+			{
+				handleInput(e);
+			}
+
+			update();
+
+			nextTick += (Uint32)TIME_STEP;
 			numUpdates++;
 		}
 
 		// interpolation = float(SDL_GetTicks() + TIME_STEP - nextTick) / float(TIME_STEP);
-		
+
 		ptrGameObjects->moveCamera();
 		ptrGameObjects->setOffsets();
 		ptrGameObjects->clampCamera();

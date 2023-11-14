@@ -8,14 +8,12 @@ LevelDetails::LevelDetails() : m_levelString(""), m_levelWidthInTiles(0), m_leve
 							   m_levelHeightInPixels(0), m_tileWidthInPixels(0), m_tileHeightInPixels(0) {}
 
 LevelDetails::LevelDetails(const std::string levelString, 
-	                       const float levelWidthInTiles, 
-	                       const float levelHeightInTiles, 
-	                       const float levelWidthInPixels, 
-	                       const float levelHeightInPixels, 
-	                       const float tileWidthInPixels, 
-	                       const float tileHeightInPixels,
-						   const float playerStartingX,
-	                       const float playerStartingY) 
+	                       const int levelWidthInTiles, 
+	                       const int levelHeightInTiles, 
+	                       const int levelWidthInPixels, 
+	                       const int levelHeightInPixels, 
+	                       const int tileWidthInPixels, 
+	                       const int tileHeightInPixels) 
 					:  m_levelString(levelString), 
 	                   m_levelWidthInTiles(levelWidthInTiles), 
 	                   m_levelHeightInTiles(levelHeightInTiles), 

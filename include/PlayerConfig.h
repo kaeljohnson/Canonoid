@@ -11,11 +11,10 @@ public:
 	const float m_playerStartingX;
 	const float m_playerStartingY;
 
-	const float m_textureStartX;
-	const float m_textureEndX;
-	
-	const float m_textureStartY;
-	const float m_textureEndY;
+	const int m_textureStartX;
+	const int m_textureEndX;
+	const int m_textureStartY;
+	const int m_textureEndY;
 
 	const float m_playerWalkVelocity;
 	const float m_playerRunVelocity;
@@ -26,10 +25,10 @@ public:
 	PlayerConfig(SDL_Texture* playerTexture, 
 		         float playerStartingX, 
 		         float playerStartingY, 
-				 float textureStartX, 
-		         float textureEndX, 
-		         float textureStartY, 
-		         float textureEndY, 
+				 int textureStartX, 
+		         int textureEndX, 
+		         int textureStartY, 
+		         int textureEndY, 
 		         float playerWalkVelocity, 
 		         float playerRunVelocity, 
 		         float playerJumpVelocity, 

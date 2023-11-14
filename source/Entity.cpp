@@ -3,41 +3,45 @@
 #include <stdio.h>
 
 #include "../include/Entity.h"
+#include "../include/Tile.h"
 
 Entity::Entity() : m_isCollidable(false)
 {
-	m_currParentFrame.x = 0;
-	m_currParentFrame.y = 0;
-	m_currParentFrame.w = 0;
-	m_currParentFrame.h = 0;
+	m_currFrame.x = 0;
+	m_currFrame.y = 0;
+	m_currFrame.w = 0;
+	m_currFrame.h = 0;
 }
-Entity::Entity(SDL_Texture* texture, float xPos, float yPos, float xVel, float yVel, bool physOn, bool isCollidable, float textureStartingX, float textureStartingY, float textureEndingX, float textureEndingY)
+Entity::Entity(SDL_Texture* texture, float xPos, float yPos, float xVel, float yVel, bool physOn, bool isCollidable, int textureStartingX, int textureStartingY, int textureEndingX, int textureEndingY)
 	: state(xPos, yPos, xVel, yVel, physOn), m_texture(texture), m_isCollidable(isCollidable)
 {
-	m_currParentFrame.x = textureStartingX;
-	m_currParentFrame.y = textureStartingY;
-	m_currParentFrame.w = textureEndingX;  
-	m_currParentFrame.h = textureEndingY;
+	m_currFrame.x = textureStartingX;
+	m_currFrame.y = textureStartingY;
+	m_currFrame.w = textureEndingX;
+	m_currFrame.h = textureEndingY;
 }
 
-void Entity::move()
+void Entity::move(const Tile& topLeft, const Tile& topRight, const Tile& bottomLeft, const Tile& bottomRight)
 {
 	return;
 }
+
+void Entity::move()
+{}
 
 SDL_Texture* Entity::getTexture() const
 {
 	return m_texture;
 }
 
-void Entity::setCurrParentFrame(SDL_Rect& currFrame) 
+void Entity::setCurrFrame(SDL_Rect& currFrame)
 {
-	m_currParentFrame = currFrame;
+	m_currFrame = currFrame;
 }
 
 const SDL_Rect& Entity::getCurrFrame() const
 {
-	return m_currParentFrame;
+	return m_currFrame;
 }
 
 const State& Entity::getState() const
@@ -45,264 +49,282 @@ const State& Entity::getState() const
 	return state;
 }
 
-void Entity::free() 
+void Entity::free()
 {
-	if (m_texture != nullptr) 
+	if (m_texture != nullptr)
 	{
 		SDL_DestroyTexture(m_texture);
 		m_texture = nullptr;
 	}
 }
 
-void Entity::setStateX(float newXPos, float newXVel)
+void Entity::setCurrStateX(float newXPos, float newXVel)
 {
-	state.setXPos(newXPos);
-	state.setXVel(newXVel);
+	// state.setXPos(newXPos);
+	// state.setXVel(newXVel);
+	state.currXPos = newXPos;
+	state.currXVel = newXVel;
 }
 
-void Entity::setStateY(float newYPos, float newYVel)
+void Entity::setCurrStateY(float newYPos, float newYVel)
 {
-	state.setYPos(newYPos);
-	state.setYVel(newYVel);
+	// state.setYPos(newYPos);
+	// state.setYVel(newYVel);
+	state.currYPos = newYPos;
+	state.currYVel = newYVel;
 }
 
 void Entity::setPrevStateX(float x, float xVel)
 {
-	state.setPrevXPos(x);
-	state.setPrevXVel(xVel);
+	// state.setPrevXPos(x);
+	// state.setPrevXVel(xVel);
+	state.prevXPos = x;
+	state.prevXVel = xVel;
 }
 
 void Entity::setPrevStateY(float y, float yVel)
 {
-	state.setPrevYPos(y);
-	state.setPrevYVel(yVel);
+	// state.setPrevYPos(y);
+	// state.setPrevYVel(yVel);
+	state.prevYPos = y;
+	state.prevYVel = yVel;
 }
 
-void Entity::collision(const Entity& topLeft, const Entity& topRight, const Entity& bottomLeft, const Entity& bottomRight)
+void Entity::setNextStateX(float nextXPos, float nextXVel)
 {
-	if (!topLeft.m_isCollidable && !topRight.m_isCollidable && !bottomLeft.m_isCollidable && !bottomRight.m_isCollidable) return;
+	state.nextXPos = nextXPos;
+	state.nextXVel = nextXVel;
+}
+void Entity::setNextStateY(float nextYPos, float nextYVel)
+{
+	state.nextYPos = nextYPos;
+	state.nextYVel = nextYVel;
+}
 
-	const float xPos = state.getXPos();
-	const float xVel = state.getXVel();
-	const float yPos = state.getYPos();
-	const float yVel = state.getYVel();
+// Collision detection functions below.
+// Currently, collision detections involves passing the 4 tiles surrounding the entity into the objects function.
+// The collision function returns early if there are no collisions.
+// The function checks the velocities and to know what type of collision to check for. Once the type of collision
+// is recognized, if there is a collision, the entity "snaps" to the wall that the collision is occuring on.
 
-	const float width = m_currParentFrame.w;
-	const float height = m_currParentFrame.h;
+inline void Entity::handleCornerCollision(const float diffBetweenX, const float diffBetweenY, const Tile& snapToTile)
+{
+	const float xPos = state.currXPos;
+	const float xVel = state.currXVel;
+	const float yPos = state.currYPos;
+	const float yVel = state.currYVel;
+
+	if (diffBetweenX == diffBetweenY)
+	{
+		if (yVel > 0)
+			snapUp(snapToTile);
+		else
+			snapDown(snapToTile);
+
+		if (xVel < 0)
+			snapRight(snapToTile);
+		else
+			snapLeft(snapToTile);
+	}
+	else if (diffBetweenX > diffBetweenY)
+	{
+		if (yVel > 0)
+			snapUp(snapToTile);
+		else
+			snapDown(snapToTile);
+
+		// Player should maybe starting sliding off?
+		onGround = true;
+	}
+	else
+	{
+		if (xVel < 0)
+			snapRight(snapToTile);
+		else
+			snapLeft(snapToTile);
+	}
+}
+
+inline void Entity::snapDown(const Tile& topTile)
+{
+	setCurrStateY((float)topTile.getYPos() + (float)m_currFrame.h, state.currYVel);
+}
+
+inline void Entity::snapUp(const Tile& bottomTile)
+{
+	setCurrStateY((float)bottomTile.getYPos() - (float)m_currFrame.h, state.currYVel);
+}
+
+inline void Entity::snapLeft(const Tile& rightTile)
+{
+	setCurrStateX((float)rightTile.getXPos() - (float)m_currFrame.w, state.currXVel);
+}
+
+inline void Entity::snapRight(const Tile& leftTile)
+{
+	setCurrStateX((float)leftTile.getXPos() + (float)leftTile.getTileWidth(), state.currXVel);
+}
+
+void Entity::collision(const Tile& topLeft, const Tile& topRight, const Tile& bottomLeft, const Tile& bottomRight)
+{
+	onGround = false;
+
+	if (!topLeft.getIsCollidable() && !topRight.getIsCollidable() && !bottomLeft.getIsCollidable() && !bottomRight.getIsCollidable()) return;
+
+	const float xPos = state.currXPos;
+	const float xVel = state.currXVel;
+	const float yPos = state.currYPos;
+	const float yVel = state.currYVel;
+
+	const float width = (float)m_currFrame.w;
+	const float height = (float)m_currFrame.h;
 
 	if (xVel > 0 && yVel > 0)
 	{
 		bool cornerCollision = collisionX(bottomRight) &&
-				               collisionY(bottomRight) &&
-				               !collisionX(topRight) &&
-				               !collisionY(bottomLeft);
+			collisionY(bottomRight) &&
+			!collisionX(topRight) &&
+			!collisionY(bottomLeft);
 
 		if (cornerCollision)
 		{
-			float diffBetweenX = (xPos + width - bottomRight.getState().getXPos());
-			float diffBetweenY = ((yPos + height) - bottomRight.getState().getYPos());
+			float diffBetweenX = (xPos + width - bottomRight.getXPos());
+			float diffBetweenY = ((yPos + height) - bottomRight.getYPos());
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, bottomRight);
 		}
 		else if (collisionX(topRight) && collisionY(bottomLeft))
 		{
-			setStateX(xPos - xVel, xVel);
-			setStateY(yPos - yVel, yVel);
+			snapLeft(topRight);
+			snapUp(bottomRight);
+			onGround = true;
 		}
 		else if ((collisionX(topRight) || collisionX(bottomRight)) && !collisionY(bottomLeft))
 		{
-			setStateX(xPos - xVel, xVel);
+			snapLeft(topRight);
 		}
 		else if ((collisionY(bottomLeft) || collisionY(bottomRight)) && !collisionX(topRight))
 		{
-			setStateY(yPos - yVel, yVel);
+			snapUp(bottomLeft);
+			onGround = true;
 		}
 	}
 	else if (xVel > 0 && yVel < 0)
 	{
 		bool cornerCollision = collisionX(topRight) &&
-							   collisionY(topRight) &&
-							   !collisionX(bottomRight) &&
-							   !collisionY(topLeft);
+			collisionY(topRight) &&
+			!collisionX(bottomRight) &&
+			!collisionY(topLeft);
 
 		if (cornerCollision)
 		{
-			float diffBetweenX = (xPos + width - topRight.getState().getXPos());
-			float diffBetweenY = ((topRight.getState().getYPos() + topRight.getCurrFrame().h - yPos));
+			float diffBetweenX = (xPos + width - topRight.getXPos());
+			float diffBetweenY = ((topRight.getYPos() + topRight.getTileFrame().h - yPos));
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, topRight);
 		}
 		else if (collisionY(topLeft) && collisionX(bottomRight))
 		{
-			setStateX(xPos - xVel, xVel);
-			setStateY(yPos - yVel, yVel);
+			snapLeft(bottomRight);
+			snapDown(topLeft);
+
 		}
 		else if ((collisionX(topRight) || collisionX(bottomRight)) && !collisionY(topLeft))
 		{
-			setStateX(xPos - xVel, xVel);
+			snapLeft(bottomRight);
 		}
 		else if ((collisionY(topLeft) || collisionY(topRight)) && !collisionX(bottomRight))
 		{
-			setStateY(yPos - yVel, yVel);
+			snapDown(topLeft);
 		}
 	}
 	else if (xVel < 0 && yVel < 0)
 	{
 		bool cornerCollision = collisionX(topLeft) &&
-			                   collisionY(topLeft) &&
-							   !collisionX(topRight) &&
-							   !collisionY(bottomLeft);
+			collisionY(topLeft) &&
+			!collisionX(topRight) &&
+			!collisionY(bottomLeft);
 
 		if (cornerCollision)
 		{
-			float diffBetweenX = (topLeft.state.getXPos() + topLeft.getCurrFrame().w - xPos);
-			float diffBetweenY = (topLeft.state.getYPos() + topLeft.getCurrFrame().h - yPos);
+			float diffBetweenX = (topLeft.getXPos() + topLeft.getTileFrame().w - xPos);
+			float diffBetweenY = (topLeft.getYPos() + topLeft.getTileFrame().h - yPos);
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, topLeft);
 		}
 		else if (collisionX(bottomLeft) && collisionY(topRight))
 		{
-			setStateX(xPos - xVel, xVel);
-			setStateY(yPos - yVel, yVel);
+			snapRight(bottomLeft);
+			snapDown(topRight);
 		}
 		else if ((collisionX(topLeft) || collisionX(bottomLeft)) && !collisionY(topRight))
 		{
-			setStateX(xPos - xVel, xVel);
+			snapRight(bottomLeft);
 		}
 		else if ((collisionY(topLeft) || collisionY(topRight)) && !collisionX(bottomLeft))
 		{
-			setStateY(yPos - yVel, yVel);
+			snapDown(topRight);
 		}
 	}
 	else if (xVel < 0 && yVel > 0)
 	{
 		bool cornerCollision = collisionX(bottomLeft) &&
-							   collisionY(bottomLeft) &&
-							   !collisionX(topLeft) &&
-							   !collisionY(bottomRight);
+			collisionY(bottomLeft) &&
+			!collisionX(topLeft) &&
+			!collisionY(bottomRight);
 
 		if (cornerCollision)
 		{
-			float diffBetweenX = (bottomLeft.getState().getXPos() + bottomLeft.getCurrFrame().w - xPos);
-			float diffBetweenY = (yPos + height - bottomLeft.getState().getYPos());
+			float diffBetweenX = (bottomLeft.getXPos() + bottomLeft.getTileFrame().w - xPos);
+			float diffBetweenY = (yPos + height - bottomLeft.getYPos());
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, bottomLeft);
 		}
 		else if (collisionX(topLeft) && collisionY(bottomRight))
 		{
-			setStateX(xPos - xVel, xVel);
-			setStateY(yPos - yVel, yVel);
+			snapRight(topLeft);
+			snapUp(bottomRight);
+			onGround = true;
 		}
 		else if ((collisionX(topLeft) || collisionX(bottomLeft)) && !collisionY(bottomRight))
 		{
-			setStateX(xPos - xVel, xVel);
+			snapRight(topLeft);
 		}
 		else if ((collisionY(bottomLeft) || collisionY(bottomRight)) && !collisionX(topLeft))
 		{
-			setStateY(yPos - yVel, yVel);
+			snapUp(bottomLeft);
+			onGround = true;
 		}
-	}	
+	}
 	else if (yVel < 0)
 	{
 		if (collisionY(topLeft) && collisionY(topRight))
 		{
-			setStateY(yPos - yVel, yVel);
+			snapDown(topLeft);
 			return;
 		}
 
 		bool cornerCollisionRight = collisionX(topRight) &&
-									collisionY(topRight);
+			collisionY(topRight);
 
 		if (cornerCollisionRight)
 		{
-			float diffBetweenX = (xPos + width - topRight.getState().getXPos());
-			float diffBetweenY = (topRight.getState().getYPos() + topRight.getCurrFrame().h - yPos);
+			float diffBetweenX = (xPos + width - topRight.getXPos());
+			float diffBetweenY = (topRight.getYPos() + topRight.getTileFrame().h - yPos);
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, topRight);
 			return;
 		}
 
 		bool cornerCollisionLeft = collisionX(topLeft) &&
-								   collisionY(topLeft);
+			collisionY(topLeft);
 
 		if (cornerCollisionLeft)
 		{
-			float diffBetweenX = (topLeft.getState().getXPos() + topLeft.getCurrFrame().w - xPos);
-			float diffBetweenY = (topLeft.getState().getYPos() + topLeft.getCurrFrame().h - yPos);
+			float diffBetweenX = (topLeft.getXPos() + topLeft.getTileFrame().w - xPos);
+			float diffBetweenY = (topLeft.getYPos() + topLeft.getTileFrame().h - yPos);
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, topLeft);
 			return;
 		}
 	}
@@ -310,55 +332,30 @@ void Entity::collision(const Entity& topLeft, const Entity& topRight, const Enti
 	{
 		if (collisionY(bottomLeft) && collisionY(bottomRight))
 		{
-			setStateY(yPos - yVel, yVel);
+			snapUp(bottomRight);
+			onGround = true;
 			return;
 		}
 
-		bool cornerCollisionRight = collisionX(bottomRight) &&
-									collisionY(bottomRight);
+		bool cornerCollisionRight = collisionX(bottomRight) && collisionY(bottomRight);
 
 		if (cornerCollisionRight)
 		{
-			float diffBetweenX = (xPos + width - bottomRight.getState().getXPos());
-			float diffBetweenY = (yPos + height - bottomRight.getState().getYPos());
+			float diffBetweenX = (xPos + width - bottomRight.getXPos());
+			float diffBetweenY = (yPos + height - bottomRight.getYPos());
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, bottomRight);
 			return;
 		}
 
-		bool cornerCollisionLeft = collisionX(bottomLeft) &&
-								   collisionY(bottomLeft);
+		bool cornerCollisionLeft = collisionX(bottomLeft) && collisionY(bottomLeft);
 
 		if (cornerCollisionLeft)
 		{
-			float diffBetweenX = (xPos - bottomLeft.getState().getXPos() + bottomLeft.getCurrFrame().w);
-			float diffBetweenY = (yPos + height - bottomLeft.getState().getYPos());
+			float diffBetweenX = (xPos - bottomLeft.getXPos() + bottomLeft.getTileFrame().w);
+			float diffBetweenY = (yPos + height - bottomLeft.getYPos());
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, bottomLeft);
 			return;
 		}
 	}
@@ -366,55 +363,31 @@ void Entity::collision(const Entity& topLeft, const Entity& topRight, const Enti
 	{
 		if (collisionX(bottomLeft) && collisionX(topLeft))
 		{
-			setStateX(xPos - xVel, xVel);
+			snapRight(topLeft);
 			return;
 		}
 
 		bool cornerCollisionTop = collisionX(topLeft) &&
-								  collisionY(topLeft);
+			collisionY(topLeft);
 
 		if (cornerCollisionTop)
 		{
-			float diffBetweenX = (topLeft.getState().getXPos() + topLeft.getCurrFrame().w - xPos);
-			float diffBetweenY = (topLeft.getState().getYPos() + topLeft.getCurrFrame().h - yPos);
+			float diffBetweenX = (topLeft.getXPos() + topLeft.getTileFrame().w - xPos);
+			float diffBetweenY = (topLeft.getYPos() + topLeft.getTileFrame().h - yPos);
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, topLeft);
 			return;
 		}
 
 		bool cornerCollisionBottom = collisionX(bottomLeft) &&
-									 collisionY(bottomLeft);
+			collisionY(bottomLeft);
 
 		if (cornerCollisionBottom)
 		{
-			float diffBetweenX = (bottomLeft.getState().getXPos() + bottomLeft.getCurrFrame().w - xPos);
-			float diffBetweenY = (bottomLeft.getState().getYPos() - yPos + height);
+			float diffBetweenX = (bottomLeft.getXPos() + bottomLeft.getTileFrame().w - xPos);
+			float diffBetweenY = (bottomLeft.getYPos() - yPos + height);
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, bottomLeft);
 			return;
 		}
 	}
@@ -422,88 +395,60 @@ void Entity::collision(const Entity& topLeft, const Entity& topRight, const Enti
 	{
 		if (collisionX(bottomRight) && collisionX(topRight))
 		{
-			setStateX(xPos - xVel, xVel);
+			snapLeft(topRight);
 			return;
 		}
 
 		bool cornerCollisionTop = collisionX(topRight) &&
-								  collisionY(topRight);
+			collisionY(topRight);
 
 		if (cornerCollisionTop)
 		{
-			float diffBetweenX = (xPos + width - topRight.getState().getXPos());
-			float diffBetweenY = (topRight.getState().getYPos() + topRight.getCurrFrame().h - yPos);
+			float diffBetweenX = (xPos + width - topRight.getXPos());
+			float diffBetweenY = (topRight.getYPos() + topRight.getTileFrame().h - yPos);
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, topRight);
 			return;
 		}
 
 		bool cornerCollisionBottom = collisionX(bottomRight) &&
-									 collisionY(bottomRight);
+			collisionY(bottomRight);
 
 		if (cornerCollisionBottom)
 		{
-			float diffBetweenX = (xPos + width - bottomRight.getState().getXPos());
-			float diffBetweenY = (yPos + height - bottomRight.getState().getYPos());
+			float diffBetweenX = (xPos + width - bottomRight.getXPos());
+			float diffBetweenY = (yPos + height - bottomRight.getYPos());
 
-			if (diffBetweenX == diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-				setStateX(xPos - xVel, xVel);
-			}
-			else if (diffBetweenX > diffBetweenY)
-			{
-				setStateY(yPos - yVel, yVel);
-			}
-			else
-			{
-				setStateX(xPos - xVel, xVel);
-			}
+			handleCornerCollision(diffBetweenX, diffBetweenY, bottomRight);
 			return;
 		}
 	}
 }
 
-bool Entity::collisionX(const Entity& toComp)
+bool Entity::collisionX(const Tile& toComp)
 {
-	if (!toComp.m_isCollidable) return false;
+	if (!toComp.getIsCollidable()) return false;
 
-	float xPosLeft = state.getXPos();
-	float xPosRight = xPosLeft + m_currParentFrame.w;
+	const float xPosLeft = state.currXPos;
+	const float xPosRight = xPosLeft + m_currFrame.w;
 
-	const State& toCompState = toComp.getState();
-	
-	bool sidewaysCollision = xPosRight > toCompState.getXPos() && xPosLeft < toCompState.getXPos() + toComp.getCurrFrame().w;
+	bool sidewaysCollision = xPosRight > toComp.getXPos() && xPosLeft < toComp.getXPos() + toComp.getTileFrame().w;
 
 	if (sidewaysCollision)
 	{
 		return true;
 	}
 	return false;
-} 
+}
 
-bool Entity::collisionY(const Entity& toComp)
+bool Entity::collisionY(const Tile& toComp)
 {
-	if (!toComp.m_isCollidable) return false;
+	if (!toComp.getIsCollidable()) return false;
 
-	float yPosTop = state.getYPos();
-	float yPosBottom = yPosTop + m_currParentFrame.h;
+	const float yPosTop = state.currYPos;
+	const float yPosBottom = yPosTop + m_currFrame.h;
 
-	const State& toCompState = toComp.getState();
-
-	bool verticalCollision = yPosTop < toCompState.getYPos() + toComp.getCurrFrame().h && yPosBottom > toCompState.getYPos();
+	bool verticalCollision = yPosTop < toComp.getYPos() + toComp.getTileFrame().h && yPosBottom > toComp.getYPos();
 
 	if (verticalCollision)
 	{
@@ -514,21 +459,21 @@ bool Entity::collisionY(const Entity& toComp)
 
 // Unused functions below
 
-bool Entity::collision(const Entity& toCompare)
+bool Entity::collision(const Tile& toCompare)
 {
-	if (toCompare.m_isCollidable == false) return false;
+	if (!toCompare.getIsCollidable()) return false;
 
-	const State& toCompareState = toCompare.getState();
+	// const State& toCompareState = toCompare.getState();
 
-	float oneLeft = state.getXPos();
-	float oneRight = oneLeft + getCurrFrame().w;
-	float oneTop = state.getYPos();
-	float oneBottom = oneTop - getCurrFrame().h;
+	const float oneLeft = state.currXPos;
+	const float oneRight = oneLeft + m_currFrame.w;
+	const float oneTop = state.currYPos;
+	const float oneBottom = oneTop - m_currFrame.h;
 
-	float twoLeft = toCompareState.getXPos();
-	float twoRight = twoLeft + toCompare.getCurrFrame().w;
-	float twoTop = toCompareState.getYPos();
-	float twoBottom = twoTop - toCompare.getCurrFrame().h;
+	const float twoLeft = (float)toCompare.getXPos();
+	const float twoRight = twoLeft + toCompare.getTileFrame().w;
+	const float twoTop = (float)toCompare.getYPos();
+	const float twoBottom = twoTop - toCompare.getTileFrame().h;
 
 	bool verticalCollision = oneTop > twoBottom && oneBottom < twoTop;
 	bool sidewaysCollision = oneRight >= twoLeft && oneLeft <= twoRight;

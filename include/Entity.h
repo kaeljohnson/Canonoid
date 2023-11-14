@@ -4,43 +4,60 @@
 #include <SDL_image.h>
 
 #include "State.h"
+#include "Tile.h"
 
 class Entity
 {
 private:
-	SDL_Rect m_currParentFrame;
+	SDL_Rect m_currFrame;
 	SDL_Texture* m_texture = nullptr;
 
 protected:
 	State state;
 public:
 	bool m_isCollidable;
+	bool onGround = false;
+	bool onLeftWall = false;
+	bool onRightWall = false;
+	bool onCeiling = false;
 
 	Entity();
 	Entity(SDL_Texture* texture, 
 		float xPos, float yPos, 
 		float xVel, float yVel, 
 		bool physOn, bool isCollidable, 
-		float textureStartingX, float textureStartingY, 
-		float textureEndingX, float textureEndingY);
+		int textureStartingX, int textureStartingY, 
+		int textureEndingX, int textureEndingY);
 
-	void setCurrParentFrame(SDL_Rect& currFrame);
+	void setCurrFrame(SDL_Rect& currFrame);
+	const SDL_Rect& getCurrFrame() const;
 
 	SDL_Texture* getTexture() const;
-	const SDL_Rect& getCurrFrame() const;
-	const State& getState() const;
 
+	// State getters and setters.
+	const State& getState() const;
 	void setPrevStateX(float x, float xVel);
 	void setPrevStateY(float y, float YVel);
-	void setStateX(float newX, float newXVel);
-	void setStateY(float newY, float newYVel);
+	void setCurrStateX(float newX, float newXVel);
+	void setCurrStateY(float newY, float newYVel);
+	void setNextStateX(float nextXPos, float nextXVel);
+	void setNextStateY(float nextYPos, float nextYVel);
 
+	// Movement related functions.
+	virtual void move(const Tile& topLeft, const Tile& topRight, const Tile& bottomLeft, const Tile& bottomRight);
 	virtual void move();
 
-	bool collision(const Entity&);
-	void collision(const Entity& topLeft, const Entity& topRight, const Entity& bottomLeft, const Entity& bottomRight);
-	bool collisionX(const Entity& toComp);
-	bool collisionY(const Entity& toComp);
+
+	// Collision detection below.
+	inline void snapDown(const Tile& bottomTile);
+	inline void snapUp(const Tile& bottomTile);
+	inline void snapLeft(const Tile& bottomTile);
+	inline void snapRight(const Tile& bottomTile);
+	inline void handleCornerCollision(const float diffBetweenX, const float diffBetweenY, const Tile& snapToTile);
+	bool collision(const Tile&);
+	void collision(const Tile& topLeft, const Tile& topRight, const Tile& bottomLeft, const Tile& bottomRight);
+	bool collisionX(const Tile& toComp);
+	bool collisionY(const Tile& toComp);
 
 	void free();
 };

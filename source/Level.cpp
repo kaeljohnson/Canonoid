@@ -1,52 +1,19 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 #include "../include/Level.h"
-#include "../include/WindowRenderer.h"
+#include "../include/Renderer.h"
 #include "../include/Levels.h"
 #include "../include/Tile.h"
 
-Level::Level(WindowRenderer* window, std::unordered_map<std::string, SDL_Texture*>& levelTextures)
+Level::Level(Renderer* window, std::unordered_map<std::string, SDL_Texture*>& levelTextures)
 	: ptrWindow(window), ptrFloorTexture(levelTextures.at("floor1")), playerStartingX(0), playerStartingY(0)
 {
 	levels::getBigPlayground(m_levelDetails);
 	loadMap();
-}
-
-const std::string& Level::getMapString() const
-{
-	return m_levelDetails.m_levelString;
-}
-
-const float Level::getTileLevelWidth() const
-{
-	return m_levelDetails.m_levelWidthInTiles;
-}
-
-const float Level::getTileLevelHeight() const
-{
-	return m_levelDetails.m_levelHeightInTiles;
-}
-
-const float Level::getLevelWidth() const
-{
-	return m_levelDetails.m_levelWidthInPixels;
-}
-
-const float Level::getLevelHeight() const
-{
-	return m_levelDetails.m_levelHeightInPixels;
-}
-
-const float Level::getTileWidthInPixels() const
-{
-	return m_levelDetails.m_tileWidthInPixels;
-}
-
-const float Level::getTileHeightInPixels() const
-{
-	return m_levelDetails.m_tileHeightInPixels;
 }
 
 bool Level::loadMap()
@@ -81,8 +48,8 @@ bool Level::loadMap()
 		{
 			int xTileCoord = currXTile * m_levelDetails.m_tileWidthInPixels;
 			int yTileCoord = currYTile * m_levelDetails.m_tileHeightInPixels;
-			playerStartingX = xTileCoord;
-			playerStartingY = yTileCoord;
+			playerStartingX = (float)xTileCoord;
+			playerStartingY = (float)yTileCoord;
 			tempLayer.push_back(Tile(xTileCoord, yTileCoord, nullptr, false, m_levelDetails.m_tileWidthInPixels, m_levelDetails.m_tileHeightInPixels));
 		}
 		currXTile += 1;
@@ -95,14 +62,14 @@ bool Level::loadMap()
 
 bool Level::renderViewableArea(const float offsetX, const float offsetY, const float cameraWidth, const float cameraHeight, const float interpolation)
 {
-	int firstViewableTileX = (int)(offsetX / 64);
-	int firstViewableTileY = (int)(offsetY / 64);
+	int firstViewableTileX = (int)(offsetX / util::getTileDim());
+	int firstViewableTileY = (int)(offsetY / util::getTileDim());
 
-	int lastViewableTileX = firstViewableTileX + (int)(cameraWidth / 64) + 1;
-	int lastViewableTileY = firstViewableTileY + (int)(cameraHeight / 64) + 1;
+	int lastViewableTileX = firstViewableTileX + (int)(cameraWidth / util::getTileDim()) + 1;
+	int lastViewableTileY = firstViewableTileY + (int)(cameraHeight / util::getTileDim()) + 1;
 
-	lastViewableTileX = lastViewableTileX > m_levelDetails.m_levelWidthInTiles ? m_levelDetails.m_levelWidthInTiles : lastViewableTileX;
-	lastViewableTileY = lastViewableTileY > m_levelDetails.m_levelHeightInTiles ? m_levelDetails.m_levelHeightInTiles : lastViewableTileY;
+	lastViewableTileX = lastViewableTileX > m_levelDetails.m_levelWidthInTiles ? (int)m_levelDetails.m_levelWidthInTiles : (int)lastViewableTileX;
+	lastViewableTileY = lastViewableTileY > m_levelDetails.m_levelHeightInTiles ? (int)m_levelDetails.m_levelHeightInTiles : (int)lastViewableTileY;
 
 	for (int layer = firstViewableTileY; layer < lastViewableTileY; layer++)
 	{
@@ -134,4 +101,19 @@ const float Level::getPlayerStartingY() const
 const LevelDetails& Level::getLevelDetails() const
 {
 	return m_levelDetails;
+}
+
+const std::string& Level::getMapString() const
+{
+	return m_levelDetails.m_levelString;
+}
+
+const int Level::getLevelWidth() const
+{
+	return m_levelDetails.m_levelWidthInPixels;
+}
+
+const int Level::getLevelHeight() const
+{
+	return m_levelDetails.m_levelHeightInPixels;
 }
